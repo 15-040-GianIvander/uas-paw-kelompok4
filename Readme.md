@@ -52,6 +52,20 @@ Aplikasi ini memungkinkan pengguna untuk berperan sebagai **Organizer** (Penyele
 
 ---
 
+## 🧪 Testing API
+
+Untuk testing API, Anda dapat menggunakan koleksi Postman yang telah disediakan:
+
+**[📌 Postman Collection - Event Ticketing API](https://kyura-7439799.postman.co/workspace/Kyura's-Workspace~7fd240d7-b268-4301-84b5-a18242933d82/collection/46103004-9ca7aac7-98d8-4e43-80bf-3adad53be21a?action=share&creator=46103004)**
+
+Koleksi ini berisi seluruh endpoint API yang tersedia untuk testing:
+- User Authentication (Register, Login)
+- Event Management (CRUD Operations)
+- Booking System
+- Dan endpoint lainnya
+
+---
+
 ## 🗄️ Database Schema (ERD)
 
 Aplikasi ini menggunakan 3 tabel utama yang saling berelasi:
