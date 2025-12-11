@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: backend
+Version: 0.0
+Requires-Dist: plaster_pastedeploy
+Requires-Dist: pyramid
+Requires-Dist: waitress
+Requires-Dist: alembic
+Requires-Dist: sqlalchemy
+Requires-Dist: psycopg2-binary
+Dynamic: requires-dist

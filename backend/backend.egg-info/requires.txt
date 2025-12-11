@@ -1,0 +1,6 @@
+plaster_pastedeploy
+pyramid
+waitress
+alembic
+sqlalchemy
+psycopg2-binary
