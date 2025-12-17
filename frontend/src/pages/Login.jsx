@@ -20,18 +20,11 @@ const Login = () => {
           <div className="hero">
             <h3>Selamat datang di Evoria</h3>
             <p>Kelola event, tiket, dan peserta dengan mudah — semua di satu tempat. Masuk untuk melanjutkan ke dashboard admin.</p>
-            <small style={{ color: 'var(--text-muted)' }}>Didesain dengan palet & bentuk yang sama seperti referensi.</small>
-          </div>
+            </div>
         </div>
 
         <div className="auth-right">
-          <div className="auth-logo">
-            <div className="brand">Ev</div>
-            <div>
-              <div style={{ fontWeight: 700 }}>Evoria Admin</div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Masuk untuk melanjutkan</div>
-            </div>
-          </div>
+
 
           <button className="social-btn" onClick={() => alert('Sign in with Google (placeholder)')} aria-label="Sign in with Google">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,10 +38,8 @@ const Login = () => {
           <form onSubmit={handleLogin}>
             <div style={{ marginBottom: 12 }}>
               <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-main)', marginBottom: 8 }}>Email</label>
-              <div className="input-with-icon">
-                <span className="icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 6.5v11A2.5 2.5 0 0 0 5.5 20h13a2.5 2.5 0 0 0 2.5-2.5v-11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </span>
+              <div className="input-with-icon icon-left">
+                <span className="icon" aria-hidden="true">@</span>
                 <input
                   type="email"
                   placeholder="nama@email.com"
@@ -85,14 +76,11 @@ const Login = () => {
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
               <label className="remember"><input type="checkbox" style={{ marginRight: 6 }} /> Ingat saya</label>
-              <Link to="/register" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 600 }}>Daftar</Link>
+              <Link to="/register" className="small-link small-link--primary" style={{ alignSelf: 'center' }}>Belum punya akun?</Link>
             </div>
 
             <div className="auth-actions">
               <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Masuk</button>
-              <button type="button" className="btn" style={{ border: '1px solid var(--border)', background: 'transparent' }} onClick={() => { setEmail('demo@a.com'); setPassword('password'); }}>
-                Demo
-              </button>
             </div>
           </form>
 

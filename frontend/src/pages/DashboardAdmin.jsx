@@ -28,15 +28,15 @@ const DashboardAdmin = () => {
       <div className="stats-grid">
         <div className="stat-card">
           <div style={{ color: 'var(--text-muted)' }}>Total Event</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>{sample.totalEvents}</div>
+          <div className="box-heading stat-number">{sample.totalEvents}</div>
         </div>
         <div className="stat-card">
           <div style={{ color: 'var(--text-muted)' }}>Tickets Sold</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>{sample.ticketsSold}</div>
+          <div className="box-heading stat-number">{sample.ticketsSold}</div>
         </div>
         <div className="stat-card">
           <div style={{ color: 'var(--text-muted)' }}>Revenue</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>Rp {sample.revenue.toLocaleString()}</div>
+          <div className="box-heading stat-number">Rp {sample.revenue.toLocaleString()}</div>
         </div>
       </div>
 
