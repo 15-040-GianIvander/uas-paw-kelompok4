@@ -1,3 +1,4 @@
+from .security import check_password, hash_password, create_token, verify_token
 from pyramid.view import view_config
 from pyramid.response import Response
 from sqlalchemy.exc import DBAPIError
@@ -12,6 +13,13 @@ import uuid
 def register(request):
     try:
         data = request.json_body
+        
+        # 1. VALIDASI ROLE (Hanya 'admin' atau 'user')
+        input_role = data.get('role', '').lower() # Ubah ke huruf kecil semua
+        if input_role not in ['admin', 'user']:
+            request.response.status = 400
+            return {'message': 'Invalid role. Choose "admin" or "user"'}
+
         # Cek email duplikat
         if request.dbsession.query(User).filter_by(email=data['email']).first():
             request.response.status = 400
@@ -21,10 +29,12 @@ def register(request):
             name=data['name'],
             email=data['email'],
             password=hash_password(data['password']),
-            role=data['role'] # 'organizer' atau 'attendee'
+            role=input_role # Simpan yang sudah di-lowercase
         )
+        
         request.dbsession.add(new_user)
-        request.dbsession.flush()  # Untuk mendapatkan ID sebelum commit
+        request.dbsession.flush()
+        
         return {'message': 'User created successfully', 'id': new_user.id}
     except Exception as e:
         request.response.status = 500
@@ -37,8 +47,12 @@ def login(request):
         user = request.dbsession.query(User).filter_by(email=data['email']).first()
         
         if user and check_password(data['password'], user.password):
+            # GENERATE JWT TOKEN
+            token = create_token(user.id, user.role)
+            
             return {
                 'message': 'Login success',
+                'token': token,  # <-- Kirim Token ke User
                 'user_id': user.id,
                 'role': user.role,
                 'name': user.name
@@ -49,7 +63,6 @@ def login(request):
     except Exception as e:
         request.response.status = 500
         return {'error': str(e)}
-
 # --- EVENT MANAGEMENT ---
 
 @view_config(route_name='events', renderer='json', request_method='GET')
@@ -67,34 +80,59 @@ def get_events(request):
         'organizer_id': e.organizer_id
     } for e in events]
 
+# Helper untuk mengambil data user dari Token Header
+def get_user_from_request(request):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return None, "Missing Token"
+    
+    payload = verify_token(auth_header)
+    if not payload:
+        return None, "Invalid or Expired Token"
+        
+    return payload, None # payload berisi {'sub': id, 'role': role}
+
 @view_config(route_name='events', renderer='json', request_method='POST')
 def create_event(request):
     try:
+        # 1. CEK TOKEN & AUTH
+        user_data, error = get_user_from_request(request)
+        if error:
+            request.response.status = 401
+            return {'message': error}
+        
+        # 2. CEK ROLE (Hanya Admin)
+        if user_data['role'] != 'admin':
+            request.response.status = 403
+            return {'message': 'Forbidden: Only Admin can create events'}
+
         data = request.json_body
         
-        # Cek apakah user adalah organizer
-        # (Catatan: Di aplikasi real, user_id diambil dari Token/Session, bukan dikirim mentah dari body)
-        organizer = request.dbsession.query(User).get(data['organizer_id'])
-        if not organizer or organizer.role != 'organizer':
-            request.response.status = 403
-            return {'message': 'Only organizers can create events'}
-
-        # Parsing tanggal (Format: YYYY-MM-DD HH:MM)
-        # Contoh input: "2025-12-31 19:00"
-        event_date = datetime.strptime(data['date'], '%Y-%m-%d %H:%M')
+        # --- LOGIKA TANGGAL FLEKSIBEL (BARU) ---
+        # Menerima format "2025-12-31 19:00" ATAU "2025-12-31T19:00:00"
+        raw_date = data['date']
+        # Ganti 'T' jadi spasi, dan buang detik/milidetik jika ada
+        clean_date = raw_date.replace('T', ' ').split('.')[0]
+        if len(clean_date) > 16:
+            clean_date = clean_date[:16] # Potong jadi "YYYY-MM-DD HH:MM"
+            
+        event_date = datetime.strptime(clean_date, '%Y-%m-%d %H:%M')
+        # ----------------------------------------
 
         new_event = Event(
-            organizer_id=data['organizer_id'],
+            organizer_id=user_data['sub'], # ID dari Token
             title=data['title'],
             description=data.get('description', ''),
-            date=event_date,
+            date=event_date, # Pakai tanggal yang sudah bersih
             location=data['location'],
             capacity=int(data['capacity']),
             ticket_price=int(data['ticket_price'])
         )
+        
         request.dbsession.add(new_event)
-        request.dbsession.flush()  # Untuk mendapatkan ID sebelum commit
+        request.dbsession.flush()
         return {'message': 'Event created successfully', 'id': new_event.id}
+
     except Exception as e:
         request.response.status = 500
         return {'error': str(e)}
@@ -124,47 +162,67 @@ def get_event_detail(request):
 @view_config(route_name='event_detail', renderer='json', request_method='PUT')
 def update_event(request):
     try:
+        # 1. CEK TOKEN & AUTH
+        user_data, error = get_user_from_request(request)
+        if error:
+            request.response.status = 401
+            return {'message': error}
+
+        # 2. CEK ROLE (Hanya Admin)
+        if user_data['role'] != 'admin':
+            request.response.status = 403
+            return {'message': 'Forbidden: Only Admin can update events'}
+
         event_id = request.matchdict['id']
-        data = request.json_body
-        
         event = request.dbsession.query(Event).get(event_id)
+        
         if not event:
             request.response.status = 404
             return {'message': 'Event not found'}
 
-        # Validasi: Hanya Organizer pemilik event yang boleh edit
-        # (Simulasi: cek apakah ID yang dikirim sama dengan pemilik event)
-        if data.get('organizer_id') != event.organizer_id:
-            request.response.status = 403
-            return {'message': 'Not authorized to edit this event'}
-
-        # Update field (jika ada data baru, update. jika tidak, pakai lama)
+        data = request.json_body
+        
+        # Update field biasa
         if 'title' in data: event.title = data['title']
         if 'description' in data: event.description = data['description']
         if 'location' in data: event.location = data['location']
-        if 'capacity' in data: event.capacity = data['capacity']
-        if 'ticket_price' in data: event.ticket_price = data['ticket_price']
+        if 'capacity' in data: event.capacity = int(data['capacity'])
+        if 'ticket_price' in data: event.ticket_price = int(data['ticket_price'])
         
-        # Khusus tanggal perlu parsing ulang
+        # --- LOGIKA TANGGAL FLEKSIBEL (BARU) ---
         if 'date' in data:
-            event.date = datetime.strptime(data['date'], '%Y-%m-%d %H:%M')
+            raw_date = data['date']
+            clean_date = raw_date.replace('T', ' ').split('.')[0]
+            if len(clean_date) > 16:
+                clean_date = clean_date[:16]
+            
+            event.date = datetime.strptime(clean_date, '%Y-%m-%d %H:%M')
+        # ----------------------------------------
 
         return {'message': 'Event updated successfully'}
 
     except Exception as e:
         request.response.status = 500
         return {'error': str(e)}
-
 # 3. DELETE Event (Hapus Acara)
 @view_config(route_name='event_detail', renderer='json', request_method='DELETE')
 def delete_event(request):
     try:
+        # 1. CEK TOKEN & AUTH
+        user_data, error = get_user_from_request(request)
+        if error:
+            request.response.status = 401
+            return {'message': error}
+
+        # 2. CEK ROLE (Hanya Admin yang boleh hapus)
+        if user_data['role'] != 'admin':
+            request.response.status = 403
+            return {'message': 'Forbidden: Only Admin can delete events'}
+
+        # 3. CARI & HAPUS EVENT
         event_id = request.matchdict['id']
-        # Note: Idealnya ambil user_id dari header/token, tapi untuk sekarang via body/query
-        # Kita anggap siapa saja yang tahu ID bisa delete dulu untuk test, 
-        # atau boleh kirim organizer_id di body untuk validasi.
-        
         event = request.dbsession.query(Event).get(event_id)
+        
         if not event:
             request.response.status = 404
             return {'message': 'Event not found'}
@@ -172,6 +230,39 @@ def delete_event(request):
         request.dbsession.delete(event)
         return {'message': 'Event deleted successfully'}
         
+    except Exception as e:
+        request.response.status = 500
+        return {'error': str(e)}
+# --- ADMIN FEATURES ---
+
+@view_config(route_name='users_list', renderer='json', request_method='GET')
+def get_all_users(request):
+    try:
+        # 1. Cek Siapa yang Request?
+        # Karena kita belum pakai Token canggih, kita minta ID admin dikirim via Query Param
+        # Contoh URL: /api/users?admin_id=X7K9
+        admin_id = request.params.get('admin_id')
+
+        if not admin_id:
+            request.response.status = 401
+            return {'message': 'Unauthorized: Please provide admin_id'}
+
+        # 2. Cek di Database: Apakah ID ini beneran Admin?
+        admin = request.dbsession.query(User).get(admin_id)
+        if not admin or admin.role != 'admin':
+            request.response.status = 403 # Forbidden
+            return {'message': 'Access Denied: Only Admins can view user list'}
+
+        # 3. Jika Lolos, Tampilkan Semua User
+        users = request.dbsession.query(User).all()
+        return [{
+            'id': u.id,
+            'name': u.name,
+            'email': u.email,
+            'role': u.role,
+            'created_at': u.created_at.isoformat()
+        } for u in users]
+
     except Exception as e:
         request.response.status = 500
         return {'error': str(e)}

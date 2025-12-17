@@ -22,11 +22,16 @@ def main(global_config, **settings):
         config.registry.dbmaker = sessionmaker(bind=engine)
         config.add_request_method(get_db, 'dbsession', reify=True)
 
-        # --- ROUTING ---
+       # --- ROUTING ---
         config.add_route('register', '/api/register')
         config.add_route('login', '/api/login')
-        config.add_route('events', '/api/events')          # GET (List) & POST (Create)
-        config.add_route('event_detail', '/api/events/{id}') # DELETE / PUT
+        
+        # EVENT ROUTES
+        config.add_route('events', '/api/events')          
+        config.add_route('event_detail', '/api/events/{id}') 
+
+        # ADMIN ROUTE (BARU)
+        config.add_route('users_list', '/api/users') # <--- Tambahkan ini
         
         config.scan('.views')
         
