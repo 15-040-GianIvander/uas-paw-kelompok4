@@ -541,6 +541,76 @@ input:focus {
   background-repeat: no-repeat;
 }
 
+/* --- Admin Page (reuse events gradient but allow different hero) --- */
+.admin-page {
+  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
+  min-height: 100vh;
+  background-repeat: no-repeat;
+}
+
+/* New admin layout */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
+}
+
+.admin-sidebar {
+  padding: 28px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-nav a {
+  color: rgba(255,255,255,0.9);
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.admin-nav a.active,
+.admin-nav a:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.admin-main {
+  padding: 28px 40px;
+}
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.box-heading { color: var(--text-muted); font-size: 0.95rem; }
+.stat-number { font-size: 1.7rem; font-weight: 800; margin-top: 6px; }
+
+/* small responsive tweaks for admin layout */
+@media (max-width: 980px) {
+  .admin-layout { grid-template-columns: 1fr; }
+  .admin-sidebar { flex-direction: row; gap: 12px; overflow-x: auto; padding: 12px; }
+  .admin-nav { flex-direction: row; gap: 8px; }
+  .admin-main { padding: 18px; }
+}
+
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
 /* --- Events Hero --- */
 .events-hero {
   min-height: 420px;
