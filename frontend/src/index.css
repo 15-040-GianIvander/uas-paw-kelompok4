@@ -3,8 +3,8 @@
 
 :root {
   /* --- PALET WARNA (Sesuai yg tadi) --- */
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
+  --primary: #75a7d1;
+  --primary-hover: #75a7d1;
   --bg-page: #f8fafc;
   --bg-card: #ffffff;
   --text-main: #0f172a;
@@ -76,6 +76,18 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-1px);
 }
 
+/* Danger / red button for critical actions (used on NotFound page) */
+.btn-danger {
+  background-color: #c0392b;
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-danger:hover {
+  background-color: #a93226;
+  transform: translateY(-1px);
+}
+
 input {
   width: 100%;
   padding: 12px 16px;
@@ -99,7 +111,7 @@ input:focus {
   display: grid;
   place-items: center;
   padding: 40px 20px;
-  background: linear-gradient(180deg, rgba(37,99,235,0.03) 0%, rgba(99,102,241,0.02) 100%);
+  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
 }
 
 .auth-card {
@@ -201,8 +213,59 @@ input:focus {
   color: var(--text-muted);
 }
 
+/* Right-aligned icon variant (e.g. show an @ on the right) */
+.input-with-icon.icon-right .icon {
+  left: auto;
+  right: 12px;
+}
+
+.input-with-icon.icon-right input {
+  padding-left: 16px;
+  padding-right: 40px;
+}
+
+/* Left-aligned icon variant: simple inline symbol */
+.input-with-icon.icon-left .icon {
+  left: 12px;
+  right: auto;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 0;
+  padding: 0;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-with-icon.icon-left input {
+  padding-left: 44px; /* room for simple icon */
+}
+
 .input-with-icon input {
   padding-left: 40px;
+}
+
+/* Small text utilities for links and remember label */
+.small-link {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.small-link.small-link--primary {
+  color: var(--primary);
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  white-space: nowrap; /* keep single line */
 }
 
 .field-row {
@@ -241,10 +304,13 @@ input:focus {
 
 /* --- Events & Dashboard styling --- */
 .search-bar {
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  border-radius: 9999px; /* pill */
   border: 1px solid var(--border);
   width: 260px;
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(16,24,40,0.04);
+  font-size: 0.98rem;
 }
 
 .events-grid {
@@ -280,6 +346,8 @@ input:focus {
   display: block;
   position: absolute;
   inset: 0;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
 .event-thumb .tag,
@@ -319,12 +387,28 @@ input:focus {
 
 .event-card {
   background: var(--bg-card);
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
+  border-radius: 20px; /* more rounded */
+  box-shadow: 0 6px 0 rgba(16,24,40,0.03), 0 18px 32px rgba(16,24,40,0.06);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  /* Start hidden / slightly offset for scroll-in animation */
+  opacity: 0;
+  transform: translateY(18px) translateX(var(--tx, 0px)) scale(.995);
+  transition: transform 560ms cubic-bezier(.2,.9,.2,1), opacity 560ms cubic-bezier(.2,.9,.2,1), box-shadow 180ms ease;
+  transition-delay: var(--delay, 0ms);
+  will-change: transform, opacity;
+}
+
+.event-card.in-view {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+  transition-delay: var(--delay, 0ms);
+}
+
+.event-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 36px rgba(16,24,40,0.12), 0 6px 0 rgba(16,24,40,0.02);
 }
 
 .event-card:hover {
@@ -336,6 +420,73 @@ input:focus {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* Rows layout: full rows use grid; partial rows center their items */
+.events-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.events-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.events-row.row-center {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+/* Ensure cards in centered rows stay the same width as grid items */
+.events-row.row-center .event-card {
+  /* 3 gaps of 18px = 54px total between 4 items */
+  flex: 0 0 calc((100% - 54px) / 4);
+  max-width: calc((100% - 54px) / 4);
+}
+
+@media (max-width: 1200px) {
+  /* reduce to 3 columns */
+  .events-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 980px) {
+  /* reduce to 2 columns on narrower screens */
+  .events-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .events-row.row-center .event-card {
+    flex: 0 0 calc((100% - 18px) / 2);
+    max-width: calc((100% - 18px) / 2);
+  }
+}
+
+@media (max-width: 600px) {
+  .events-row {
+    grid-template-columns: 1fr;
+  }
+
+  .events-row.row-center .event-card {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+/* Pagination */
+.pagination .btn {
+  min-width: 44px;
+  padding: 8px 12px;
+  border-radius: 9999px;
+}
+
+.pagination .btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .event-row {
@@ -385,9 +536,79 @@ input:focus {
 
 /* --- Events Page Gradient --- */
 .events-page {
-  background: linear-gradient(180deg, #1446b8 0%, #2b7bf6 35%, #84b7ff 70%, #ffffff 100%);
+  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
   min-height: 100vh;
   background-repeat: no-repeat;
+}
+
+/* --- Admin Page (reuse events gradient but allow different hero) --- */
+.admin-page {
+  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
+  min-height: 100vh;
+  background-repeat: no-repeat;
+}
+
+/* New admin layout */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
+}
+
+.admin-sidebar {
+  padding: 28px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-nav a {
+  color: rgba(255,255,255,0.9);
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.admin-nav a.active,
+.admin-nav a:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.admin-main {
+  padding: 28px 40px;
+}
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.box-heading { color: var(--text-muted); font-size: 0.95rem; }
+.stat-number { font-size: 1.7rem; font-weight: 800; margin-top: 6px; }
+
+/* small responsive tweaks for admin layout */
+@media (max-width: 980px) {
+  .admin-layout { grid-template-columns: 1fr; }
+  .admin-sidebar { flex-direction: row; gap: 12px; overflow-x: auto; padding: 12px; }
+  .admin-nav { flex-direction: row; gap: 8px; }
+  .admin-main { padding: 18px; }
+}
+
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: 1fr; }
 }
 
 /* --- Events Hero --- */
@@ -462,12 +683,14 @@ input:focus {
 }
 
 .hero-controls .search-bar {
-  width: 720px;                /* Lebarkan input di desktop */
+  width: 820px;                /* Lebarkan input di desktop */
   max-width: calc(100% - 80px);
-  padding: 14px 18px;         /* Lebih nyaman untuk diketik */
-  font-size: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(37,99,235,0.06);
+  padding: 16px 22px;         /* Lebih nyaman untuk diketik */
+  font-size: 1.02rem;
+  border-radius: 9999px; /* fully pill */
+  box-shadow: 0 12px 36px rgba(37,99,235,0.06);
+  background: #ffffff;
+  border: 1px solid rgba(16,24,40,0.04);
 }
 
 @media (max-width: 1100px) {
