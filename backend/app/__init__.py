@@ -31,7 +31,11 @@ def main(global_config, **settings):
         config.add_route('event_detail', '/api/events/{id}') 
 
         # ADMIN ROUTE (BARU)
-        config.add_route('users_list', '/api/users') # <--- Tambahkan ini
+        config.add_route('users_list', '/api/users') 
+
+        # BOOKING ROUTES (BARU)
+        config.add_route('bookings', '/api/bookings')          # POST (Beli Tiket)
+        config.add_route('my_bookings', '/api/my-bookings')    # GET (Lihat Tiket Saya)
         
         config.scan('.views')
         
