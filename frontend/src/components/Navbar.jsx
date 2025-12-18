@@ -46,7 +46,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
              <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold font-outfit text-lg shadow-blue-300 shadow-md group-hover:scale-110 transition">E</div>
-             <span className="text-2xl font-bold font-outfit text-blue-900 tracking-tight">Evoria.</span>
+             <span className="text-2xl font-bold font-outfit text-blue-900 tracking-tight">Evoria</span>
           </Link>
 
           {/* Desktop Menu */}
