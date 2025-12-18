@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // Pastikan Link diimport
 import { User, Mail, Phone, MapPin, Camera, Edit3, Settings, Shield, LogOut, Calendar, ChevronRight } from 'lucide-react';
 
 const UserProfile = () => {
@@ -52,7 +53,7 @@ const UserProfile = () => {
                     </div>
 
                     {/* Nama & Info Utama */}
-                    <div className="flex-1 pt-2">
+                    <div className="flex-1 pt-2 w-full">
                         <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-4">
                             <div>
                                 <h2 className="text-3xl md:text-4xl font-extrabold font-outfit text-slate-900 mb-2">
@@ -68,14 +69,19 @@ const UserProfile = () => {
                                 </div>
                             </div>
                             
-                            {/* Tombol Edit (Langsung di kanan atas) */}
-                            <button className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-slate-800 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                            {/* --- PERUBAHAN DISINI: Button jadi Link --- */}
+                            <Link 
+                                to="/profile/edit" 
+                                className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-slate-800 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                            >
                                 <Edit3 size={18} /> Edit Profil
-                            </button>
+                            </Link>
+                            {/* ----------------------------------------- */}
+
                         </div>
 
                         {/* Bio Singkat */}
-                        <div className="mt-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-slate-600 leading-relaxed text-sm md:text-base">
+                        <div className="mt-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-slate-600 leading-relaxed text-sm md:text-base text-center md:text-left">
                             "{user.bio}"
                         </div>
                     </div>

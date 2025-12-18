@@ -14,6 +14,7 @@ import Register from './pages/Register';
 import BookingForm from './pages/BookingForm';
 import BookingHistory from './pages/BookingHistory';
 import UserProfile from './pages/UserProfile';
+import EditProfile from './pages/EditProfile'; // <--- 1. IMPORT FILE INI
 
 import OrganizerDashboard from './pages/Dashboard';
 import DashboardAdmin from './pages/DashboardAdmin';
@@ -40,6 +41,9 @@ function App() {
         <Route path="/booking/:id" element={<BookingForm />} />
         <Route path="/my-bookings" element={<BookingHistory />} />
         <Route path="/profile" element={<UserProfile />} />
+        
+        {/* 2. TAMBAHKAN ROUTE INI DI SINI */}
+        <Route path="/profile/edit" element={<EditProfile />} />
 
         {/* === Organizer Routes === */}
         <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
