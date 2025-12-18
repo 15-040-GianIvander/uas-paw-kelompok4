@@ -1,96 +1,205 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { User, Mail, Phone, Ticket, CreditCard, Calendar, MapPin, ShieldCheck, Minus, Plus, ChevronRight, Lock } from 'lucide-react';
 
 const BookingForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  
+  // State untuk form
   const [qty, setQty] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState('qris'); // qris, bank, ewallet
 
-  // Mock Event Data
+  // Mock Data Event (Ceritanya ambil dari ID)
   const event = {
     title: "Evoria Music Festival 2024",
     price: 150000,
-    date: "20 Desember 2024"
+    date: "20 Des 2024",
+    time: "19:00 WIB",
+    location: "PKOR Way Halim, Bandar Lampung",
+    image: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=200"
   };
 
-  const totalPrice = event.price * qty;
+  // Hitung Total
+  const total = event.price * qty;
+  const adminFee = 5000;
+  const grandTotal = total + adminFee;
 
-  const handleBooking = (e) => {
+  const handleIncrement = () => setQty(qty + 1);
+  const handleDecrement = () => { if (qty > 1) setQty(qty - 1); };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Berhasil memesan ${qty} tiket! Total: Rp ${totalPrice.toLocaleString('id-ID')}`);
-    navigate('/my-bookings');
+    // Simulasi loading/proses bayar
+    alert(`Pesanan Berhasil Dibuat! Total: Rp ${grandTotal.toLocaleString('id-ID')}`);
+    navigate('/my-bookings'); // Redirect ke history
   };
 
   return (
-    // ✅ SUDAH BERSIH: Tidak ada <Navbar />
-    <div className="min-h-screen bg-slate-50 py-10 px-4 flex items-center justify-center">
-      <div className="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row border border-slate-100">
-          
-          {/* Kiri: Ringkasan Event */}
-          <div className="md:w-1/2 bg-blue-600 p-10 text-white flex flex-col justify-between">
-              <div>
-                  <h2 className="text-3xl font-bold font-outfit mb-2">Konfirmasi Pemesanan</h2>
-                  <p className="opacity-80 font-poppins">Selesaikan pembayaran untuk mengamankan tiketmu.</p>
-              </div>
-              <div className="mt-8 space-y-4">
-                  <div className="bg-blue-700/50 p-4 rounded-xl backdrop-blur-sm">
-                      <p className="text-sm opacity-70 mb-1">Event</p>
-                      <h3 className="text-xl font-semibold font-outfit">{event.title}</h3>
-                  </div>
-                  <div className="bg-blue-700/50 p-4 rounded-xl backdrop-blur-sm">
-                      <p className="text-sm opacity-70 mb-1">Tanggal</p>
-                      <h3 className="text-xl font-semibold font-outfit">{event.date}</h3>
-                  </div>
-              </div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-b from-blue-600 via-blue-50 to-white pb-20">
+      
+      {/* 1. HERO HEADER */}
+      <div className="relative pt-36 pb-32 px-6 text-center">
+         <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+         <div className="relative z-10">
+         </div>
+      </div>
 
-          {/* Kanan: Form */}
-          <div className="md:w-1/2 p-10">
-              <form onSubmit={handleBooking} className="space-y-6">
-                  <div>
-                      <label className="block text-slate-600 font-medium mb-2 font-poppins">Jumlah Tiket</label>
-                      <input 
-                          type="number" 
-                          min="1" 
-                          max="5"
-                          value={qty}
-                          onChange={(e) => setQty(parseInt(e.target.value))}
-                          className="w-full border border-slate-200 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                      />
-                  </div>
+      {/* 2. FORM CONTENT */}
+      <div className="max-w-6xl mx-auto px-4 -mt-24 relative z-20">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* --- KOLOM KIRI: FORM INPUT --- */}
+            <div className="lg:col-span-2 space-y-6">
+                
+                {/* Section 1: Data Pemesan */}
+                <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-blue-900/5 border border-white/50">
+                    <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-6">
+                        <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><User size={20}/></div>
+                        Data Pemesan
+                    </h3>
+                    
+                    <div className="space-y-4">
+                        {/* Nama Lengkap */}
+                        <div>
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Nama Lengkap</label>
+                            <div className="relative">
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                <input type="text" placeholder="Masukkan nama sesuai KTP" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" required />
+                            </div>
+                        </div>
 
-                  <div className="pt-4 border-t border-slate-100">
-                      <div className="flex justify-between mb-2 text-slate-600 text-sm">
-                          <span>Harga Satuan</span>
-                          <span>Rp {event.price.toLocaleString('id-ID')}</span>
-                      </div>
-                      <div className="flex justify-between mb-2 text-slate-600 text-sm">
-                          <span>Jumlah</span>
-                          <span>x {qty}</span>
-                      </div>
-                      <div className="flex justify-between mt-4 text-xl font-bold text-blue-900 font-outfit">
-                          <span>Total Bayar</span>
-                          <span>Rp {totalPrice.toLocaleString('id-ID')}</span>
-                      </div>
-                  </div>
+                        {/* Grid Email & Telpon */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Email</label>
+                                <div className="relative">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                    <input type="email" placeholder="email@contoh.com" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" required />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Nomor WhatsApp</label>
+                                <div className="relative">
+                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                    <input type="tel" placeholder="0812..." className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                  <div className="flex flex-col gap-3 pt-2">
-                      <button 
-                          type="submit" 
-                          className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
-                      >
-                          Bayar Sekarang
-                      </button>
-                      <button 
-                          type="button" 
-                          onClick={() => navigate(-1)}
-                          className="w-full text-slate-500 py-3 font-medium hover:text-slate-700 hover:bg-slate-50 rounded-xl transition"
-                      >
-                          Batal
-                      </button>
-                  </div>
-              </form>
-          </div>
+                {/* Section 2: Jumlah Tiket */}
+                <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-blue-900/5 border border-white/50">
+                    <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-6">
+                        <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><Ticket size={20}/></div>
+                        Detail Tiket
+                    </h3>
+
+                    <div className="flex flex-col md:flex-row justify-between items-center bg-blue-50/50 p-4 rounded-2xl border border-blue-100 gap-4">
+                        <div className="text-center md:text-left">
+                            <p className="font-bold text-slate-800">Tiket Regular</p>
+                            <p className="text-sm text-slate-500">Rp {event.price.toLocaleString('id-ID')} / pax</p>
+                        </div>
+
+                        {/* Counter Button */}
+                        <div className="flex items-center gap-4 bg-white p-2 rounded-xl shadow-sm border border-slate-200">
+                            <button type="button" onClick={handleDecrement} className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition disabled:opacity-50">
+                                <Minus size={16} />
+                            </button>
+                            <span className="w-8 text-center font-bold text-slate-900">{qty}</span>
+                            <button type="button" onClick={handleIncrement} className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition shadow-sm">
+                                <Plus size={16} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Section 3: Metode Pembayaran */}
+                <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-blue-900/5 border border-white/50">
+                     <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-6">
+                        <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><CreditCard size={20}/></div>
+                        Metode Pembayaran
+                    </h3>
+
+                    <div className="space-y-3">
+                        {/* Option 1: QRIS */}
+                        <label className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'qris' ? 'border-blue-500 bg-blue-50/50 ring-1 ring-blue-500' : 'border-slate-100 hover:border-slate-300'}`}>
+                            <input type="radio" name="payment" value="qris" checked={paymentMethod === 'qris'} onChange={() => setPaymentMethod('qris')} className="w-5 h-5 text-blue-600 focus:ring-blue-500" />
+                            <div className="flex-1">
+                                <p className="font-bold text-slate-800">QRIS (Gopay, OVO, Dana)</p>
+                                <p className="text-xs text-slate-500">Scan & Bayar instan.</p>
+                            </div>
+                            <div className="bg-white px-2 py-1 rounded border border-slate-200 text-[10px] font-bold text-slate-600">AUTO</div>
+                        </label>
+
+                        {/* Option 2: Virtual Account */}
+                        <label className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'bank' ? 'border-blue-500 bg-blue-50/50 ring-1 ring-blue-500' : 'border-slate-100 hover:border-slate-300'}`}>
+                            <input type="radio" name="payment" value="bank" checked={paymentMethod === 'bank'} onChange={() => setPaymentMethod('bank')} className="w-5 h-5 text-blue-600 focus:ring-blue-500" />
+                            <div className="flex-1">
+                                <p className="font-bold text-slate-800">Virtual Account Bank</p>
+                                <p className="text-xs text-slate-500">BCA, Mandiri, BNI, BRI</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            {/* --- KOLOM KANAN: ORDER SUMMARY (STICKY) --- */}
+            <div className="lg:col-span-1">
+                <div className="sticky top-32 space-y-6">
+                    
+                    {/* Card Ringkasan */}
+                    <div className="bg-white rounded-3xl p-6 shadow-2xl shadow-blue-900/10 border border-white/50 overflow-hidden">
+                        <div className="relative h-32 rounded-2xl overflow-hidden mb-6">
+                            <img src={event.image} alt="Event" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+                                <h4 className="text-white font-bold font-outfit text-lg leading-tight">{event.title}</h4>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3 mb-6 pb-6 border-b border-dashed border-slate-200 text-sm">
+                            <div className="flex items-start gap-3">
+                                <Calendar size={16} className="text-blue-500 mt-0.5"/>
+                                <span className="text-slate-600">{event.date} • {event.time}</span>
+                            </div>
+                             <div className="flex items-start gap-3">
+                                <MapPin size={16} className="text-blue-500 mt-0.5"/>
+                                <span className="text-slate-600">{event.location}</span>
+                            </div>
+                        </div>
+
+                        {/* Detail Harga */}
+                        <div className="space-y-3 text-sm mb-6">
+                            <div className="flex justify-between text-slate-600">
+                                <span>Tiket x {qty}</span>
+                                <span>Rp {total.toLocaleString('id-ID')}</span>
+                            </div>
+                            <div className="flex justify-between text-slate-600">
+                                <span>Biaya Layanan</span>
+                                <span>Rp {adminFee.toLocaleString('id-ID')}</span>
+                            </div>
+                            <div className="flex justify-between items-center pt-4 border-t border-slate-100">
+                                <span className="font-bold text-slate-800">Total Bayar</span>
+                                <span className="font-extrabold text-2xl text-blue-600">Rp {grandTotal.toLocaleString('id-ID')}</span>
+                            </div>
+                        </div>
+
+                        {/* Tombol Bayar */}
+                        <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-200 transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <Lock size={18}/> Bayar Sekarang
+                        </button>
+
+                        <p className="text-xs text-center text-slate-400 mt-4 flex items-center justify-center gap-1">
+                            <ShieldCheck size={12}/> Pembayaran aman & terenkripsi
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
       </div>
     </div>
   );
