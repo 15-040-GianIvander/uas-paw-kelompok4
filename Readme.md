@@ -3,6 +3,7 @@
 **Kelompok 4 - Studi Kasus 8**
 
 Repository ini berisi source code untuk **Event Ticketing System**, sebuah platform manajemen acara dan pemesanan tiket online. Proyek ini dikembangkan sebagai Ujian Akhir Semester (UAS) mata kuliah Pengembangan Aplikasi Web (IF25-22014) di Institut Teknologi Sumatera.
+Aplikasi ini memungkinkan pengguna untuk melakukan autentikasi, melihat daftar event, memesan tiket, serta memungkinkan admin atau event organizer untuk mengelola event yang tersedia.
 
 ---
 
@@ -41,7 +42,7 @@ Aplikasi ini memungkinkan pengguna untuk berperan sebagai **Organizer** (Penyele
 * Vite / Create React App
 
 **Backend:**
-* Python 3.x
+* Python
 * **Pyramid Framework**
 * **SQLAlchemy** (ORM)
 * **Alembic** (Database Migrations)
@@ -50,6 +51,89 @@ Aplikasi ini memungkinkan pengguna untuk berperan sebagai **Organizer** (Penyele
 **Database:**
 * **PostgreSQL**
 
+---
+
+## 📄 API Documentation
+
+Dokumentasi API berikut menjelaskan endpoint utama yang digunakan dalam aplikasi Event Ticketing System. Seluruh API berbasis REST dan menggunakan format data JSON.
+
+### Auth - Login
+Digunakan untuk proses autentikasi user.
+* **Endpoint:** /api/login
+* **Method:** POST
+* **Request Body:**
+```bash
+{
+   "email": "user@mail.com",
+   "password": "password"
+}
+```
+* **Response Success:**
+```bash
+{
+   "token": "jwt-token",
+   "user" : {
+   "id": 1,
+   "name": "User"
+ }
+}
+```
+
+### Auth - Register
+Digunakan untuk mendaftarkan user baru.
+* **Endpoint:** /api/register
+* **Method:** POST
+* **Request Body:**
+```bash
+{
+  "name": "User",
+  "email": "user@mail.com",
+  "password": "password"
+}
+```
+
+### Event - Get All Events
+Digunakan untuk mengambil seluruh data event yang tersedia.
+* **Endpoint:** /api/events
+* **Method:** GET
+* **Respons:**
+```bash
+[
+ {
+   "id": 1,
+   "title": "Music Festival",
+   "date": "2025-01-01",
+   "price": 50000
+ }
+]
+```
+
+### Event - Create Event
+Digunakan oleh admin untuk menambahkan event baru.
+* **Endpoint:** /api/events
+* **Method:** POST
+* **Authorization:** Bearer Token
+*  **Request Body:**
+```bash
+{
+  "title": "Music Festival",
+  "date": "2025-01-01",
+  "price": 50000
+}
+```
+
+### Booking - Pesan Tiker
+Digunakan oleh user untuk melakukan pemesanan tiket event.
+* **Endpoint:** /api/bookings
+* **Method:** POST
+* **Authorization:** Bearer Token
+* **Request Body:**
+```bash
+{
+  "event_id": 1,
+  "quantity": 2
+}
+```
 ---
 
 ## 🧪 Testing API
@@ -63,6 +147,17 @@ Koleksi ini berisi seluruh endpoint API yang tersedia untuk testing:
 - Event Management (CRUD Operations)
 - Booking System
 - Dan endpoint lainnya
+
+### Langkah Testing API Menggunakan Postman
+1. Buka aplikasi Postman
+2. Buat request baru sesuai endpoint yang ingin diuji
+3. Pilih method (GET / POST)
+4. Masukkan URL endpoint
+5. Untuk endpoint yang membutuhkan autentikasi:
+   * Login terlebih dahulu menggunakan endpoint /api/login
+   * Salin token yang didapatkan
+   * Masukkan token ke tab **Authorization**, pilih **Bearer Token**
+6. Kirim request dan periksa response
 
 ---
 
@@ -88,7 +183,7 @@ Ikuti langkah-langkah ini untuk menjalankan proyek di komputer lokal.
 ### 1. Setup Backend (Pyramid)
 
 ```bash
-# Masuk ke folder backend
+# Masuk Ke Folder Backend
 cd backend
 
 # Buat Virtual Environment
@@ -100,7 +195,7 @@ venv\Scripts\activate
 # Mac/Linux:
 source venv/bin/activate
 
-# Install Dependencies
+# Install Dependency
 pip install -e .
 pip install pyramid sqlalchemy alembic psycopg2-binary waitress
 
@@ -113,3 +208,20 @@ alembic upgrade head
 
 # Jalankan Server
 pserve development.ini --reload
+
+```
+
+### 2. Setup Frontend
+
+```bash
+# Masuk Ke Folder Frontend
+cd frontend
+
+# Install Dependency
+npm install
+
+# Jalankan Aplikasi Frontend
+npm run dev
+
+```
+
