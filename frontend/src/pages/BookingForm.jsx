@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { User, Mail, Phone, Ticket, CreditCard, Calendar, MapPin, ShieldCheck, Minus, Plus, ChevronRight, Lock } from 'lucide-react';
+import { sampleEvents } from '../data/events';
 
 const BookingForm = () => {
   const { id } = useParams();
@@ -10,15 +11,50 @@ const BookingForm = () => {
   const [qty, setQty] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState('qris'); // qris, bank, ewallet
 
-  // Mock Data Event (Ceritanya ambil dari ID)
-  const event = {
-    title: "Evoria Music Festival 2024",
-    price: 150000,
-    date: "20 Des 2024",
-    time: "19:00 WIB",
-    location: "PKOR Way Halim, Bandar Lampung",
-    image: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=200"
+  // Lookup event by :id from shared data
+  const event = sampleEvents.find((e) => String(e.id) === String(id)) || {
+    title: 'Event tidak ditemukan',
+    price: 0,
+    date: '',
+    time: '',
+    location: '',
+    image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=200'
   };
+
+  // Resolve image from local assets (same logic as EventList)
+  const imageModules = import.meta.glob('../assets/event-list/*.{png,jpg,jpeg,webp}', { eager: true });
+  const availableImages = Object.fromEntries(
+    Object.entries(imageModules).map(([path, mod]) => {
+      const name = path.split('/').pop();
+      return [name, mod.default];
+    })
+  );
+
+  const filenameMap = {
+    1: 'konser-indie.png',
+    2: 'tech-meetup.png',
+    3: 'festival-musik.png',
+    4: 'workshop-foto.png',
+    5: 'board-game.png',
+    6: 'marketing-digital.png',
+    7: 'teater-lokal.png',
+    8: 'yoga-pagi.png',
+    9: 'hackaton-48h.png',
+    10: 'food-festival.png'
+  };
+
+  function slugify(title) {
+    return title
+      .toLowerCase()
+      .replace(/[\s]+/g, '-')
+      .replace(/[^a-z0-9\-]/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  const slug = filenameMap[event.id] || `${slugify(event.title)}.png`;
+  const defaultImg = availableImages['for-nan.jpg'] || availableImages['for-nan.jpeg'] || Object.values(availableImages)[0] || '';
+  const imgUrl = availableImages[slug] || event.image || defaultImg;
 
   // Hitung Total
   const total = event.price * qty;
@@ -153,7 +189,7 @@ const BookingForm = () => {
                     {/* Card Ringkasan */}
                     <div className="bg-white rounded-3xl p-6 shadow-2xl shadow-blue-900/10 border border-white/50 overflow-hidden">
                         <div className="relative h-32 rounded-2xl overflow-hidden mb-6">
-                            <img src={event.image} alt="Event" className="w-full h-full object-cover" />
+                            <img src={imgUrl} alt="Event" className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
                                 <h4 className="text-white font-bold font-outfit text-lg leading-tight">{event.title}</h4>
                             </div>
