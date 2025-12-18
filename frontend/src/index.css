@@ -396,17 +396,18 @@ input:focus {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  /* Start hidden / slightly offset for scroll-in animation */
+  /* Start hidden / slightly offset for scroll-in animation (vertical-only) */
   opacity: 0;
-  transform: translateY(18px) translateX(var(--tx, 0px)) scale(.995);
-  transition: transform 560ms cubic-bezier(.2,.9,.2,1), opacity 560ms cubic-bezier(.2,.9,.2,1), box-shadow 180ms ease;
-  transition-delay: var(--delay, 0ms);
+  transform: translate3d(0, 18px, 0) scale(.995);
+  transition: transform 560ms cubic-bezier(.2,.9,.2,1) var(--delay, 0ms),
+              opacity   560ms cubic-bezier(.2,.9,.2,1) var(--delay, 0ms),
+              box-shadow 180ms ease;
   will-change: transform, opacity;
 }
 
 .event-card.in-view {
   opacity: 1;
-  transform: translateY(0) translateX(0) scale(1);
+  transform: translate3d(0, 0, 0) scale(1);
   transition-delay: var(--delay, 0ms);
 }
 
