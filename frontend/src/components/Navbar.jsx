@@ -7,6 +7,10 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Hide navbar on authentication pages
+  const _hideNavbarOn = ['/login', '/register'];
+  if (_hideNavbarOn.some(p => location.pathname.startsWith(p))) return null;
   
   // Simulasi status login (Ubah ke false untuk tes tampilan belum login)
   const isLoggedIn = true; 
