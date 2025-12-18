@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Ticket } from 'lucide-react';
 
 // import images via Vite glob (eager for simplicity)
@@ -10,32 +11,10 @@ const availableImages = Object.fromEntries(
   })
 );
 
-const sampleEvents = [
-  { id: 1, title: 'Konser Indie Night', date: '2026-01-15', venue: 'Jakarta Hall', price: 125000, tag: 'Music' },
-  { id: 2, title: 'Tech Meetup: DevTalks', date: '2026-02-05', venue: 'Coworking Space', price: 35000, tag: 'Tech' },
-  { id: 3, title: 'Festival Musik', date: '2026-03-20', venue: 'Lapangan Utama', price: 200000, tag: 'Music' },
-  { id: 4, title: 'Workshop Fotografi', date: '2026-02-28', venue: 'Studio Evoria', price: 75000, tag: 'Workshop' },
-  { id: 5, title: 'Komunitas Board Game Night', date: '2026-01-25', venue: 'BoardRoom', price: 50000, tag: 'Games' },
-  { id: 6, title: 'Seminar Marketing Digital', date: '2026-02-12', venue: 'Hotel Santika', price: 150000, tag: 'Business' },
-  { id: 7, title: 'Pentas Teater Lokal', date: '2026-03-05', venue: 'Teater Kota', price: 90000, tag: 'Art' },
-  { id: 8, title: 'Pelatihan Yoga Pagi', date: '2026-01-30', venue: 'Taman Kota', price: 30000, tag: 'Wellness' },
-  { id: 9, title: 'Hackathon 48h', date: '2026-04-01', venue: 'Evoria Campus', price: 50000, tag: 'Tech' },
-  { id: 10, title: 'Food Festival Street', date: '2026-03-15', venue: 'Alun-Alun', price: 35000, tag: 'Food' },
-  { id: 11, title: 'Open Mic Night', date: '2026-04-10', venue: 'Cafe Rasa', price: 25000, tag: 'Music' },
-  { id: 12, title: 'Charity Run 5K', date: '2026-05-02', venue: 'Taman Kota', price: 50000, tag: 'Sport' },
-  { id: 13, title: 'Design Sprint', date: '2026-04-22', venue: 'Evoria Studio', price: 80000, tag: 'Tech' },
-  { id: 14, title: 'Photography Exhibition', date: '2026-05-18', venue: 'Galeria', price: 40000, tag: 'Art' },
-  { id: 15, title: 'Farmers Market', date: '2026-04-30', venue: 'Alun-Alun', price: 10000, tag: 'Food' },
-  { id: 16, title: 'Comedy Night', date: '2026-05-05', venue: 'Comedy Club', price: 60000, tag: 'Entertainment' },
-  { id: 17, title: 'Standup Comedy Special', date: '2026-05-12', venue: 'Laugh House', price: 70000, tag: 'Entertainment' },
-  { id: 18, title: 'Open Air Cinema', date: '2026-05-14', venue: 'Park Screen', price: 25000, tag: 'Film' },
-  { id: 19, title: 'Craft & Makers Fair', date: '2026-05-20', venue: 'Convention Hall', price: 30000, tag: 'Market' },
-  { id: 20, title: 'Local Choir Concert', date: '2026-06-01', venue: 'City Hall', price: 45000, tag: 'Music' },
-  { id: 21, title: 'Night Market Bazaar', date: '2026-06-05', venue: 'Harbour Lane', price: 15000, tag: 'Food' },
-  { id: 22, title: 'Startup Pitch Day', date: '2026-06-12', venue: 'Auditorium A', price: 100000, tag: 'Business' },
-  { id: 23, title: 'Gardening Workshop', date: '2026-06-18', venue: 'Community Garden', price: 20000, tag: 'Workshop' },
-  { id: 24, title: 'Indie Film Festival', date: '2026-06-25', venue: 'Cinema Loko', price: 80000, tag: 'Film' },
-];
+import { sampleEvents } from '../data/events';
+
+// (events now come from shared data module)
+
 
 // mapping for filenames that don't directly match slugs
 const filenameMap = {
@@ -80,6 +59,8 @@ const EventList = () => {
 
   // animation / observer
   const containerRef = useRef(null);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -176,7 +157,7 @@ const EventList = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
                         <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{evt.tag}</div>
                         <div style={{ display: 'flex', gap: 8 }}>
-                          <button className="btn btn-primary" onClick={() => alert(`Beli tiket ${evt.title} (placeholder)`)}>Beli Tiket</button>
+                          <button className="btn btn-primary" onClick={() => navigate(`/booking/${evt.id}`)}>Beli Tiket</button>
                         </div>
                       </div>
                     </div>
