@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import './AdminDashboard.css';
 import { Plus, Trash2, Users, ShieldX, DollarSign, Calendar } from 'lucide-react';
+import DashboardChart from '../components/DashboardChart';
 
 const seedUsers = [
   { userId: '1001', name: 'Ayu Pratiwi', email: 'ayu@example.com', role: 'user' },
@@ -265,7 +266,8 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
         </header>
 
         {activeTab === 'overview' && (
-          <section className="stats-grid">
+          <>
+            <section className="stats-grid">
             <div className="stat-card">
               <div className="stat-title">Total Users</div>
               <div className="stat-value">{totals.users}</div>
@@ -291,6 +293,8 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
               <div className="stat-value">{totals.totalEvents}</div>
             </div>
           </section>
+            <div className="mt-6"><DashboardChart /></div>
+          </>
         )}
 
         {activeTab === 'users' && (

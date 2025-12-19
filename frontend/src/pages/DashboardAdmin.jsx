@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import './AdminDashboard.css';
 import { Plus, Edit3, Trash2, LogOut, DollarSign, Calendar, MapPin, Users } from 'lucide-react';
+import DashboardChart from '../components/DashboardChart';
 
 const dummyEvents = [
   { id: 'E-001', title: 'Konser Indie Jakarta', date: '2025-12-12', venue: 'Istora Senayan', price: 150000, img: '/assets/event-list/concert1.png' },
@@ -175,7 +176,8 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
         </header>
 
         {activeTab === 'overview' && (
-          <section className="stats-grid">
+          <>
+            <section className="stats-grid">
             <div className="stat-card">
               <div className="stat-title">Total Events</div>
               <div className="stat-value">{totals.totalEvents}</div>
@@ -196,6 +198,8 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
               <div className="stat-value">{events.length}</div>
             </div>
           </section>
+            <div className="mt-6"><DashboardChart /></div>
+          </>
         )}
 
         {activeTab === 'events' && (
