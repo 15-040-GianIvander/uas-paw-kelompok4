@@ -196,3 +196,11 @@ def get_all_users(request):
     except Exception as e:
         request.response.status = 500
         return {'error': str(e)}
+    
+@view_config(route_name='logout', renderer='json', request_method='POST')
+def logout(request):
+    # Di sistem Token (Stateless), logout sebenarnya terjadi di sisi Client (Frontend)
+    # Backend cukup memberikan respon sukses "200 OK".
+    # Frontend nanti yang bertugas menghapus token dari LocalStorage.
+    
+    return {'message': 'Logout successful'}

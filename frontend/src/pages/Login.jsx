@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../index.css'; // Pastikan CSS terhubung
+import AuthSlider from '../components/AuthSlider';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -14,13 +15,10 @@ const Login = () => {
   };
 
   return (
-    <div className="login-layout">
+    <div className="login-layout page-bg">
       <div className="auth-card">
         <div className="auth-left">
-          <div className="hero">
-            <h3>Selamat datang di Evoria</h3>
-            <p>Kelola event, tiket, dan peserta dengan mudah — semua di satu tempat. Masuk untuk melanjutkan ke dashboard admin.</p>
-            </div>
+          <AuthSlider />
         </div>
 
         <div className="auth-right">
@@ -84,9 +82,7 @@ const Login = () => {
             </div>
           </form>
 
-          <div style={{ marginTop: 18, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            Dengan masuk, Anda menyetujui <Link to="#" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Syarat & Ketentuan</Link>
-          </div>
+          {/* T&C removed from login per UX request */}
         </div>
       </div>
     </div>

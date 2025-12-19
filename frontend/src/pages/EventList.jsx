@@ -93,7 +93,7 @@ const EventList = () => {
   const goPage = (n) => setPage(Math.min(Math.max(1, n), totalPages));
 
   return (
-    <div className="events-page">
+    <div className="events-page page-bg">
       <section className="events-hero relative pt-72 pb-32 px-6 text-center overflow-hidden" aria-label="Event hero">
         <div className="hero-inner" style={{ marginTop: '70px' }}>
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1 rounded-full text-blue-50 text-xs font-bold uppercase tracking-wider mb-4 shadow-lg">

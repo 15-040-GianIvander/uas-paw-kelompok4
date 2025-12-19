@@ -42,6 +42,7 @@ def main(global_config, **settings):
        # --- ROUTING ---
         config.add_route('register', '/api/register')
         config.add_route('login', '/api/login')
+        config.add_route('logout', '/api/logout')
 
         # FORGOT PASSWORD ROUTES (BARU)
         config.add_route('forgot_password', '/api/forgot-password')
@@ -55,8 +56,9 @@ def main(global_config, **settings):
         config.add_route('users_list', '/api/users') 
 
         # BOOKING ROUTES (BARU)
-        config.add_route('bookings', '/api/bookings')          # POST (Beli Tiket)
-        config.add_route('my_bookings', '/api/my-bookings')    # GET (Lihat Tiket Saya)
+        config.add_route('bookings', '/api/bookings')          # Tahap 1: Create
+        config.add_route('pay_booking', '/api/bookings/{id}/pay') # Tahap 2: Confirm
+        config.add_route('my_bookings', '/api/my-bookings')   # GET (Lihat Tiket Saya)
         
         # Route untuk Admin melihat semua booking/attendee
         config.add_route('all_bookings', '/api/admin/bookings')

@@ -70,14 +70,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary {
-  background-color: var(--primary);
+  background-color: #2563eb; /* match EditProfile save button */
   color: white;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 20px rgba(37,99,235,0.12);
+  font-weight: 700;
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
+  background-color: #1d4ed8; /* blue-700 hover */
+  transform: translateY(-0.5px);
 }
 
 /* Danger / red button for critical actions (used on NotFound page) */
@@ -118,12 +119,21 @@ input:focus {
   background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
 }
 
+/* Global page background (use on any page container to match booking gradient) */
+.page-bg {
+  /* unified gradient tuned to match booking pages (primary blue + soft stops) */
+  background: linear-gradient(180deg, #2563eb 0%, #eaf4ff 36%, #ffffff 100%);
+  min-height: 100vh;
+  background-repeat: no-repeat;
+}
+
+
 .auth-card {
   width: 100%;
-  max-width: 920px;
+  max-width: 780px; /* reduced from 920px */
   display: grid;
-  grid-template-columns: 1fr 440px;
-  gap: 2rem;
+  grid-template-columns: 1fr 360px; /* narrower right column */
+  gap: 1.5rem;
   background: linear-gradient(180deg, var(--bg-card), rgba(255,255,255,0.96));
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
@@ -131,27 +141,92 @@ input:focus {
 }
 
 .auth-left {
-  padding: 40px;
-  background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(99,102,241,0.04));
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+  display: block;
+}
+
+/* Slider visuals inside left auth panel */
+.auth-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(99,102,241,0.04));
 }
 
-.auth-left .hero {
+.auth-slider__img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  max-width: 420px;
-  color: var(--text-main);
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.auth-left h3 {
+.auth-slider__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(2,6,23,0.58), rgba(3,37,65,0.55)); /* dark blue semi-transparent overlay */
+}
+
+.auth-slider__content {
+  position: relative;
+  z-index: 2;
+  padding: 40px;
+  max-width: 420px;
+  color: #ffffff;
+}
+
+.auth-slider__content h3 {
   font-size: 1.6rem;
   margin-bottom: 0.6rem;
+  color: #ffffff;
 }
 
-.auth-left p {
-  color: var(--text-muted);
+.auth-slider__content p {
+  color: rgba(255,255,255,0.9);
   margin-bottom: 1.2rem;
+}
+
+.auth-slider__dots {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px;
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+
+.auth-slider__dots .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.28);
+  border: none;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.auth-slider__dots .dot.active {
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.25);
+  transform: scale(1.14);
+}
+
+@media (max-width: 900px) {
+  .auth-slider__content { padding: 28px; }
+  .auth-slider__content h3 { font-size: 1.4rem; }
+}
+
+/* Keep small-screen behavior: hide left panel on very small devices */
+@media (max-width: 600px) {
+  .auth-left { display: none; }
 }
 
 .auth-right {
@@ -370,12 +445,13 @@ input:focus {
 }
 
 .event-thumb .price-pill {
-  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
   color: white;
   padding: 6px 10px;
   border-radius: 999px;
   font-weight: 700;
   font-size: 0.85rem;
+  box-shadow: 0 6px 18px rgba(37,99,235,0.12);
 }
 
 .event-title {
@@ -541,7 +617,8 @@ input:focus {
 
 /* --- Events Page Gradient --- */
 .events-page {
-  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
+  /* Ensure events page shows the unified gradient */
+  background: linear-gradient(180deg, #2563eb 0%, #eaf4ff 36%, #ffffff 100%);
   min-height: 100vh;
   background-repeat: no-repeat;
 }

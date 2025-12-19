@@ -53,14 +53,33 @@ class Event(Base):
 
 class Booking(Base):
     __tablename__ = 'bookings'
-    id = Column(String, primary_key=True, default=generate_short_id)
-    event_id = Column(String, ForeignKey('events.id'))
-    attendee_id = Column(String, ForeignKey('users.id'))
-    booking_code = Column(String, unique=True, default=generate_short_id) # Booking code juga 4 char
+    
+    # ID Booking (Primary Key)
+    id = Column(String(4), primary_key=True, default=generate_short_id)
+    
+    # Relasi ke Event dan User
+    event_id = Column(String(4), ForeignKey('events.id'), nullable=False)
+    attendee_id = Column(String(4), ForeignKey('users.id'), nullable=False)
+    
+    # Kode Booking Unik (misal: "X7K9")
+    booking_code = Column(String, unique=True, default=generate_short_id)
+    
+    # Data Tiket
     quantity = Column(Integer, nullable=False)
     total_price = Column(Integer, nullable=False)
-    status = Column(String, default="confirmed") 
+    
+    # Status Pembayaran
+    # Kita ubah defaultnya jadi "pending" agar sesuai alur pembayaran (QRIS/VA)
+    status = Column(String, default="pending") 
+    
+    # --- KOLOM TAMBAHAN (SESUAI FRONTEND) ---
+    whatsapp = Column(String, nullable=True)        # Menyimpan No WA dari form
+    payment_method = Column(String, nullable=True)  # Menyimpan 'qris', 'va_bca', dll
+    payment_details = Column(String, nullable=True) # Menyimpan Link Gambar QR atau Nomor VA
+    # ----------------------------------------
+    
     booking_date = Column(DateTime, default=datetime.utcnow)
     
+    # Relasi SQLAlchemy
     event = relationship("Event", back_populates="bookings")
     attendee = relationship("User", back_populates="bookings")
