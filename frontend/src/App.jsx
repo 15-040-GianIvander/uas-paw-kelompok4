@@ -1,8 +1,9 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Components
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 // Pages
 import EventList from './pages/EventList';
@@ -18,6 +19,7 @@ import EditProfile from './pages/EditProfile'; // <--- 1. IMPORT FILE INI
 import ForgotPassword from './pages/ForgotPassword'; // <-- Forgot Password page
 import NotificationSettings from './pages/NotificationSettings'; // <-- Notification Settings page
 import HelpCenter from './pages/HelpCenter'; // <-- Help & Support
+import PaymentPage from './pages/PaymentPage'; // <-- Payment Page
 
 import OrganizerDashboard from './pages/Dashboard';
 import DashboardAdmin from './pages/DashboardAdmin';
@@ -52,14 +54,20 @@ function App() {
         <Route path="/help" element={<HelpCenter />} />
 
         {/* === Organizer Routes === */}
-        <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
+        <Route path="/organizer/events" element={<DashboardAdmin initialTab="events" />} />
+        <Route path="/organizer/bookings" element={<DashboardAdmin initialTab="bookings" />} />
 
         {/* === Admin Routes === */}
         <Route path="/admin/dashboard" element={<DashboardAdmin />} />
 
+        {/* === Payment === */}
+        <Route path="/payment/:bookingId" element={<PaymentPage />} />
+
         {/* === 404 === */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

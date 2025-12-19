@@ -66,9 +66,19 @@ const BookingForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulasi loading/proses bayar
-    alert(`Pesanan Berhasil Dibuat! Total: Rp ${grandTotal.toLocaleString('id-ID')}`);
-    navigate('/my-bookings'); // Redirect ke history
+    // Simulate creating a booking and redirecting to payment
+    const bookingId = 'B-' + Date.now();
+    // Package booking info to pass to payment page (in a real app this would come from server)
+    const bookingState = {
+      bookingId,
+      qty,
+      pricePer: event.price,
+      total: grandTotal,
+      eventTitle: event.title,
+    };
+
+    // In real app: POST to API to create booking and get bookingId back
+    navigate(`/payment/${bookingId}`, { state: bookingState });
   };
 
   return (

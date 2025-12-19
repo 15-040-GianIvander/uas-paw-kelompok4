@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Dashboard.css';
 
 const dummy = {
@@ -26,11 +27,11 @@ export default function OrganizerDashboard() {
       <aside className="org-sidebar" aria-label="Organizer navigation">
         <div className="org-brand">Evoria</div>
         <nav>
-          <a className="active" href="/organizer/dashboard">Dashboard</a>
-          <a href="/organizer/events">Manage Events</a>
-          <a href="/organizer/bookings">My Bookings</a>
-          <a href="/organizer/scan">Scan Ticket</a>
-          <a href="/logout">Logout</a>
+          <Link className="active" to="/organizer/events">Events</Link>
+          <Link to="/organizer/events">Manage Events</Link>
+          <Link to="/organizer/bookings">My Bookings</Link>
+          <Link to="/organizer/scan">Scan Ticket</Link>
+          <Link to="/logout">Logout</Link>
         </nav>
       </aside>
 

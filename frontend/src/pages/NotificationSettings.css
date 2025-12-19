@@ -2,7 +2,11 @@
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 48px 20px;
+  padding: 120px 20px 48px; /* add top padding so header sits below fixed navbar */
+}
+
+@media (max-width: 860px) {
+  .notifications-container { padding-top: 96px; }
 }
 
 .ns-card {
