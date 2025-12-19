@@ -10,20 +10,26 @@
   display:flex;
   gap: 28px;
   padding: 40px;
-  background: var(--admin-bg);
+  background: transparent; /* let global .page-bg gradient show through */
   box-sizing:border-box;
+}
+
+/* Use a richer blue gradient on admin pages (matches login/register look) */
+.admin-page.page-bg{
+  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
 }
 
 /* Sidebar */
 .admin-sidebar{
   width: 240px;
-  background: var(--card-bg);
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.9));
   border-radius: 12px;
   box-shadow: 0 12px 30px rgba(16,24,40,0.06);
   padding: 20px;
   display:flex;
   flex-direction:column;
   gap:16px;
+  backdrop-filter: blur(4px);
 }
 
 .brand{ display:flex; align-items:center; gap:12px; }
@@ -42,20 +48,22 @@
 .admin-main{ flex:1; display:flex; flex-direction:column; gap:20px; }
 .admin-header{ display:flex; align-items:center; justify-content:space-between; gap:20px; }
 .admin-header h1{ margin:0; font-size:1.5rem; }
+
+/* make header title white on admin pages to contrast with gradient background */
+.admin-page .admin-header h1{ color: #ffffff; }
 .btn-add{ display:inline-flex; gap:8px; align-items:center; padding:8px 12px; border-radius:10px; border:none; background: linear-gradient(90deg,#1e40af,#2563eb); color:#fff; font-weight:800; cursor:pointer; box-shadow: 0 6px 18px rgba(37,99,235,0.18); }
 .btn-add svg{ color: #fff; }
 .btn-add:hover{ filter:brightness(.95); }
 
-/* Stats */
-.stats-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:16px; }
-.stat-card{ background:var(--card-bg); border-radius:12px; padding:18px; box-shadow: 0 10px 20px rgba(16,24,40,0.06); }
+.stats-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px; }
+.stat-card{ background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.88)); border-radius:12px; padding:18px; box-shadow: 0 10px 30px rgba(16,24,40,0.06); backdrop-filter: blur(6px); }
 .stat-title{ color:var(--muted); font-weight:700; margin-bottom:6px; }
 .stat-value{ font-size:1.4rem; font-weight:800; }
 
 /* Panel & Table */
 .panel{ background:transparent; }
-.table{ width:100%; border-collapse:collapse; background:var(--card-bg); border-radius:12px; overflow:hidden; box-shadow: 0 12px 30px rgba(16,24,40,0.04); }
-.table thead{ background:#fbfdff; }
+.table{ width:100%; border-collapse:collapse; background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.9)); border-radius:12px; overflow:hidden; box-shadow: 0 12px 30px rgba(16,24,40,0.04); backdrop-filter: blur(4px); }
+.table thead{ background: linear-gradient(180deg, rgba(250,253,255,0.95), rgba(245,249,255,0.85)); }
 .table th, .table td{ padding:14px 16px; text-align:left; border-bottom:1px solid #f3f4f6; }
 .table tr:hover td{ background:#ffffff; }
 
@@ -117,6 +125,9 @@
 .panel-controls{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin:12px 0; }
 .panel-controls .input-search{ width:420px; max-width:60%; }
 .panel-controls .text-sm{ color:var(--muted); }
+
+/* white count text for admin pages */
+.admin-page .text-count{ color: #ffffff; font-weight:400; text-shadow: 0 1px 0 rgba(0,0,0,0.06); }
 
 @media (max-width:720px){
   .panel-controls{ flex-direction:column; align-items:stretch; gap:10px; }
