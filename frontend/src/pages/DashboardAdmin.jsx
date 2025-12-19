@@ -237,7 +237,7 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
           <section className="panel">
             <div className="mb-4 flex items-center justify-between gap-3">
               <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari Booking, Nama user, atau ID (4 digit)..." className="input input-search w-full max-w-md" />
-              <div className="text-sm text-slate-500">Menampilkan {filteredBookings.length} / {bookings.length}</div>
+              <div className="text-sm text-count">Menampilkan {filteredBookings.length} / {bookings.length}</div>
             </div>
             <table className="table">
               <thead>
