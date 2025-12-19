@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../index.css';
 import AuthSlider from '../components/AuthSlider';
 import TermsModal from '../components/TermsModal';
 
 const Register = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,14 +13,26 @@ const Register = () => {
   const [error, setError] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
     if (password.length < 6) return setError('Password minimal 6 karakter');
     if (password !== confirm) return setError('Password dan konfirmasi tidak cocok');
     if (!accepted) return setError('Anda harus menyetujui Syarat & Ketentuan untuk mendaftar');
-    alert(`Registrasi berhasil untuk ${name} (${email})`);
+
+    setLoading(true);
+    try {
+      const { register } = await import('../services/authService');
+      await register({ name, email, password });
+      // redirect to login on success
+      navigate('/login');
+    } catch (err) {
+      setError(err?.message || 'Registrasi gagal');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,13 +103,13 @@ const Register = () => {
 
             <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'space-between' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
+                <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} disabled={loading} />
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Saya menyetujui <button type="button" onClick={() => setShowTerms(true)} style={{ background: 'transparent', border: 'none', color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer', padding: 0, fontSize: '0.72rem' }}>Syarat &amp; Ketentuan</button></span>
               </label>
             </div>
 
             <div style={{ marginTop: 10 }}>
-              <button className="btn btn-primary" type="submit" style={{ width: '100%' }}>Daftar</button>
+              <button className="btn btn-primary" type="submit" style={{ width: '100%' }} disabled={loading}>{loading ? 'Memproses...' : 'Daftar'}</button>
             </div>
 
             {showTerms && <TermsModal onClose={() => setShowTerms(false)} />}

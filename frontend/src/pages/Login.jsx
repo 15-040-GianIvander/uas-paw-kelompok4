@@ -1,17 +1,37 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../index.css'; // Pastikan CSS terhubung
 import AuthSlider from '../components/AuthSlider';
+import { login as loginService } from '../services/authService';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('Login dengan:', email, password);
-    // TODO: connect to backend auth API
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await loginService({ email, password });
+      // save tokens
+      localStorage.setItem('token', res.token);
+      localStorage.setItem('user_role', res.role);
+      localStorage.setItem('user_id', String(res.user_id));
+
+      // redirect based on role
+      if (res.role === 'admin') navigate('/admin/dashboard');
+      else if (res.role === 'superadmin' || res.role === 'super-admin') navigate('/super-admin/dashboard');
+      else navigate('/');
+    } catch (err) {
+      setError(err?.message || 'Login gagal');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -23,7 +43,6 @@ const Login = () => {
 
         <div className="auth-right">
 
-
           <button className="social-btn" onClick={() => alert('Sign in with Google (placeholder)')} aria-label="Sign in with Google">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M21.35 11.1h-9.2v2.95h5.27c-.23 1.3-1.38 3.8-5.27 3.8-3.18 0-5.79-2.63-5.79-5.86s2.61-5.86 5.79-5.86c1.8 0 3.01.77 3.7 1.43l2.53-2.44C17.8 3.7 15.86 2.7 12.98 2.7 7.9 2.7 3.9 6.86 3.9 12s4 9.3 9.08 9.3c5.26 0 8.62-3.7 8.62-8.9 0-.6-.07-1.05-.25-1.3z" fill="#EA4335"/>
@@ -34,6 +53,8 @@ const Login = () => {
           <div className="divider">atau</div>
 
           <form onSubmit={handleLogin}>
+            {error && <div style={{ color: 'crimson', marginBottom: 8 }}>{error}</div>}
+
             <div style={{ marginBottom: 12 }}>
               <label style={{ display: 'block', fontWeight: 600, color: 'var(--text-main)', marginBottom: 8 }}>Email</label>
               <div className="input-with-icon icon-left">
@@ -44,6 +65,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -65,6 +87,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={loading}
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: 600 }}>
                   {showPassword ? 'Hide' : 'Show'}
@@ -73,12 +96,12 @@ const Login = () => {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
-              <label className="remember"><input type="checkbox" style={{ marginRight: 6 }} /> Ingat saya</label>
+              <label className="remember"><input type="checkbox" style={{ marginRight: 6 }} disabled={loading} /> Ingat saya</label>
               <Link to="/register" className="small-link small-link--primary" style={{ alignSelf: 'center' }}>Belum punya akun?</Link>
             </div>
 
             <div className="auth-actions">
-              <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Masuk</button>
+              <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={loading}>{loading ? 'Memproses...' : 'Masuk'}</button>
             </div>
           </form>
 

@@ -1,8 +1,15 @@
 setup.py
 app/__init__.py
+app/email_utils.py
+app/file_utils.py
 app/models.py
 app/security.py
-app/views.py
+app/views/__init__.py
+app/views/auth.py
+app/views/bookings.py
+app/views/events.py
+app/views/profile.py
+app/views/superadmin.py
 backend.egg-info/PKG-INFO
 backend.egg-info/SOURCES.txt
 backend.egg-info/dependency_links.txt

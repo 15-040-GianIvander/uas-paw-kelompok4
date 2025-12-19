@@ -12,8 +12,8 @@ const Navbar = () => {
   const _hideNavbarOn = ['/login', '/register', '/admin/dashboard', '/super-admin/dashboard', '/404', '/organizer/events'];
   if (_hideNavbarOn.some(p => location.pathname.startsWith(p))) return null;
   
-  // Simulasi status login
-  const isLoggedIn = true; 
+  // derive auth state from localStorage
+  const isLoggedIn = Boolean(localStorage.getItem('token'));
 
   // Efek scroll
   useEffect(() => {
@@ -28,8 +28,17 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLogout = () => {
-    alert("Logout Berhasil");
+  const handleLogout = async () => {
+    try {
+      const { logout } = await import('../services/authService');
+      await logout();
+    } catch (err) {
+      // ensure storage cleared even if API fails
+      localStorage.removeItem('token');
+      localStorage.removeItem('user_role');
+      localStorage.removeItem('user_id');
+    }
+    // navigate to login after clearing
     navigate('/login');
   };
 

@@ -13,15 +13,19 @@ const ForgotPassword = () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateEmail(email)) return alert('Masukkan email yang valid');
     setIsLoading(true);
-    // Simulate API delay
-    setTimeout(() => {
+    try {
+      const { forgotPassword } = await import('../services/authService');
+      await forgotPassword({ email });
+      // redirect to reset password page with email in state
+      navigate('/reset-password', { state: { email } });
+    } catch (err) {
+      alert(err?.message || 'Gagal mengirim token.');
       setIsLoading(false);
-      setIsSubmitted(true);
-    }, 2000);
+    }
   };
 
   if (isSubmitted) {

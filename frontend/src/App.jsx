@@ -17,6 +17,7 @@ import BookingHistory from './pages/BookingHistory';
 import UserProfile from './pages/UserProfile';
 import EditProfile from './pages/EditProfile'; // <--- 1. IMPORT FILE INI
 import ForgotPassword from './pages/ForgotPassword'; // <-- Forgot Password page
+import ResetPassword from './pages/ResetPassword'; // <-- Reset Password page (from forgot flow)
 import NotificationSettings from './pages/NotificationSettings'; // <-- Notification Settings page
 import HelpCenter from './pages/HelpCenter'; // <-- Help & Support
 import PaymentPage from './pages/PaymentPage'; // <-- Payment Page
@@ -52,6 +53,7 @@ function App() {
         {/* 2. TAMBAHKAN ROUTE INI DI SINI */}
         <Route path="/profile/edit" element={<EditProfile />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/notifications" element={<NotificationSettings />} />
         <Route path="/help" element={<HelpCenter />} />
 
