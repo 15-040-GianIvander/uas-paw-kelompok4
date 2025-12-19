@@ -1,8 +1,8 @@
-"""Short ID 4 chars
+"""Add Profil
 
-Revision ID: 28bcbad3b5e9
+Revision ID: e2c1e2850f20
 Revises: 
-Create Date: 2025-12-11 20:08:57.785644
+Create Date: 2025-12-19 08:49:40.043222
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '28bcbad3b5e9'
+revision: str = 'e2c1e2850f20'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,6 +28,12 @@ def upgrade() -> None:
     sa.Column('password', sa.String(), nullable=False),
     sa.Column('role', sa.String(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('bio', sa.String(), nullable=True),
+    sa.Column('phone_number', sa.String(), nullable=True),
+    sa.Column('location', sa.String(), nullable=True),
+    sa.Column('profile_picture', sa.String(), nullable=True),
+    sa.Column('reset_token', sa.String(), nullable=True),
+    sa.Column('reset_token_expiry', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
@@ -41,6 +47,7 @@ def upgrade() -> None:
     sa.Column('capacity', sa.Integer(), nullable=False),
     sa.Column('ticket_price', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('image_filename', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['organizer_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

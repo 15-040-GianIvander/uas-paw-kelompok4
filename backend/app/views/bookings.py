@@ -1,6 +1,7 @@
 from pyramid.view import view_config
 from app.models import User, Event, Booking 
 from app.views.auth import get_user_from_request
+from app.email_utils import send_booking_confirmation
 
 # --- 1. USER: BELI TIKET (Create Booking) ---
 @view_config(route_name='bookings', renderer='json', request_method='POST')
@@ -44,8 +45,23 @@ def create_booking(request):
         request.dbsession.add(new_booking)
         request.dbsession.flush()
 
+        # --- TAMBAHAN: KIRIM EMAIL KONFIRMASI ---
+        # Kita butuh data email user & nama user
+        attendee = request.dbsession.query(User).get(user_data['sub'])
+        
+        if attendee and attendee.email:
+            send_booking_confirmation(
+                to_email=attendee.email,
+                user_name=attendee.name,
+                event_title=event.title,
+                booking_code=new_booking.booking_code,
+                quantity=quantity,
+                total_price=total_price
+            )
+        # ----------------------------------------
+
         return {
-            'message': 'Booking successful!',
+            'message': 'Booking successful! Email confirmation sent.',
             'booking_id': new_booking.id,
             'booking_code': new_booking.booking_code,
             'total_price': total_price

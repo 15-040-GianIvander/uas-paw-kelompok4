@@ -20,7 +20,16 @@ class User(Base):
     password = Column(String, nullable=False)
     role = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    bio = Column(String, nullable=True)          # Untuk "Bio Singkat"
+    phone_number = Column(String, nullable=True) # Untuk "Nomor Telepon"
+    location = Column(String, nullable=True)     # Untuk "Domisili / Lokasi"
+    profile_picture = Column(String, nullable=True) # Untuk "Foto Profil"
     
+    # --- FORGOT PASSWORD ---
+    reset_token = Column(String, nullable=True)        # Menyimpan kode unik   
+    reset_token_expiry = Column(DateTime, nullable=True) # Menyimpan waktu expired
+    # --------------------------------------
+
     events = relationship("Event", back_populates="organizer")
     bookings = relationship("Booking", back_populates="attendee")
 
@@ -35,6 +44,9 @@ class Event(Base):
     capacity = Column(Integer, nullable=False)
     ticket_price = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    # --- TAMBAHAN UNTUK UPLOAD GAMBAR EVENT ---
+    image_filename = Column(String, nullable=True) 
+    # ----------------------------------
     
     organizer = relationship("User", back_populates="events")
     bookings = relationship("Booking", back_populates="event")

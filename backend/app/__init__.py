@@ -1,6 +1,7 @@
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker
+import os
 
 def get_db(request):
     maker = request.registry.dbmaker
@@ -17,14 +18,34 @@ def get_db(request):
 def main(global_config, **settings):
     # Setup Database
     engine = engine_from_config(settings, 'sqlalchemy.')
+
+    base_dir = os.path.dirname(os.path.abspath(__file__)) 
+    upload_dir = os.path.join(base_dir, 'static', 'uploads')
+    
+    # Buat foldernya jika belum ada
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    # Simpan lokasi folder ini di registry agar bisa dipakai di views.py nanti
+    settings['upload_dir'] = upload_dir
     
     with Configurator(settings=settings) as config:
         config.registry.dbmaker = sessionmaker(bind=engine)
         config.add_request_method(get_db, 'dbsession', reify=True)
 
+        # Ini agar gambar bisa diakses via URL: http://localhost:6543/static/uploads/namafile.jpg
+        config.add_static_view(name='static', path='app:static')
+
+        # --- ROUTE PROFILE (BARU) ---
+        config.add_route('profile', '/api/profile') # Bisa GET (Lihat) & POST (Edit)
+        # ----------------------------
+
        # --- ROUTING ---
         config.add_route('register', '/api/register')
         config.add_route('login', '/api/login')
+
+        # FORGOT PASSWORD ROUTES (BARU)
+        config.add_route('forgot_password', '/api/forgot-password')
+        config.add_route('reset_password', '/api/reset-password')
         
         # EVENT ROUTES
         config.add_route('events', '/api/events')          
