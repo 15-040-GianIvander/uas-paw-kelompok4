@@ -70,14 +70,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary {
-  background-color: var(--primary);
+  background-color: #2563eb; /* match EditProfile save button */
   color: white;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 20px rgba(37,99,235,0.12);
+  font-weight: 700;
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
+  background-color: #1d4ed8; /* blue-700 hover */
+  transform: translateY(-0.5px);
 }
 
 /* Danger / red button for critical actions (used on NotFound page) */
@@ -120,7 +121,8 @@ input:focus {
 
 /* Global page background (use on any page container to match booking gradient) */
 .page-bg {
-  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
+  /* unified gradient tuned to match booking pages (primary blue + soft stops) */
+  background: linear-gradient(180deg, #2563eb 0%, #eaf4ff 36%, #ffffff 100%);
   min-height: 100vh;
   background-repeat: no-repeat;
 }
@@ -443,12 +445,13 @@ input:focus {
 }
 
 .event-thumb .price-pill {
-  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
   color: white;
   padding: 6px 10px;
   border-radius: 999px;
   font-weight: 700;
   font-size: 0.85rem;
+  box-shadow: 0 6px 18px rgba(37,99,235,0.12);
 }
 
 .event-title {
@@ -614,7 +617,8 @@ input:focus {
 
 /* --- Events Page Gradient --- */
 .events-page {
-  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
+  /* Ensure events page shows the unified gradient */
+  background: linear-gradient(180deg, #2563eb 0%, #eaf4ff 36%, #ffffff 100%);
   min-height: 100vh;
   background-repeat: no-repeat;
 }

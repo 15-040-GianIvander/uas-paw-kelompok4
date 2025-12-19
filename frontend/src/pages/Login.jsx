@@ -15,7 +15,7 @@ const Login = () => {
   };
 
   return (
-    <div className="login-layout">
+    <div className="login-layout page-bg">
       <div className="auth-card">
         <div className="auth-left">
           <AuthSlider />
