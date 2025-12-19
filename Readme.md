@@ -94,6 +94,23 @@ Aplikasi ini menggunakan 3 tabel utama yang saling berelasi:
 ![WhatsApp Image 2025-12-11 at 16 32 24](https://github.com/user-attachments/assets/2ebfb44a-32fe-4932-815e-8b9c29153b17)
 ---
 
+## 📦 Deployment Aplikasi
+
+Aplikasi Event Ticketing System telah dideploy sehingga dapat diakses secara online tanpa perlu menjalankan aplikasi secara lokal. Proses deployment dilakukan dengan memisahkan frontend dan backend agar lebih fleksibel dan scalable.
+
+### 🔧 Backend Deployment
+
+Backend telah dideploy dan berfungsi sebagai penyedia REST API yang digunakan oleh frontend, berikut link backend deployment yang bisa diakses.
+[Link backend]
+
+### 🌐 Frontend Deployment
+
+Frontend aplikasi dideploy menggunakan Vercel, berikut link frontend deployment yang bisa diakses.
+
+[📌Frontend](https://uas-paw-kelompok4.vercel.app/)
+
+---
+
 ## 🚀 Cara Instalasi & Menjalankan (Local Development)
 
 Ikuti langkah-langkah ini untuk menjalankan proyek di komputer lokal.
