@@ -26,7 +26,7 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-32 pb-20 px-4">
+    <div className="min-h-screen page-bg pt-32 pb-20 px-4">
       <div className="max-w-3xl mx-auto">
         
         {/* Header Simple */}

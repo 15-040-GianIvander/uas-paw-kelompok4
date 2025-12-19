@@ -8,8 +8,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Hide navbar on authentication pages
-  const _hideNavbarOn = ['/login', '/register'];
+  // Hide navbar on authentication and specific pages
+  const _hideNavbarOn = ['/login', '/register', '/forgot-password', '/notifications'];
   if (_hideNavbarOn.some(p => location.pathname.startsWith(p))) return null;
   
   // Simulasi status login (Ubah ke false untuk tes tampilan belum login)
