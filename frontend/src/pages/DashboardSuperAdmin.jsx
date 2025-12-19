@@ -22,44 +22,18 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
   const [users, setUsers] = useState(seedUsers);
   const [admins, setAdmins] = useState(seedAdmins);
   const [search, setSearch] = useState('');
-
-  // Add / Edit modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('user'); // 'user' or 'admin'
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState('user'); // 'user' or 'admin'
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
 
-  const openAddModal = (mode = 'user') => {
-    setModalMode(mode);
-    setForm({ name: '', email: '', phone: '' });
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setForm({ name: '', email: '', phone: '' });
-  };
-
-  const handleSubmitModal = (e) => {
-    e.preventDefault();
-    const { name, email, phone } = form;
-    if (!name || !email) return alert('Nama dan email wajib diisi.');
-    const id = gen4Digit();
-    if (modalMode === 'user') {
-      setUsers((prev) => [{ userId: id, name, email, phone, role: 'user' }, ...prev]);
-    } else {
-      setAdmins((prev) => [{ userId: id, name, email, phone, role: 'admin' }, ...prev]);
-    }
-    closeModal();
-  };
-
   // simple handlers that operate on local state (frontend simulation)
-  const handleAddUser = () => {
-    const name = window.prompt('Nama user:');
-    if (!name) return;
-    const email = window.prompt('Email user:');
-    const id = gen4Digit();
-    setUsers((prev) => [{ userId: id, name, email: email || '', role: 'user' }, ...prev]);
+  const openAddModal = (type) => {
+    setModalType(type);
+    setForm({ name: '', email: '', phone: '' });
+    setModalOpen(true);
   };
+
+  const handleAddUser = () => openAddModal('user');
 
   const handleDeleteUser = (id) => {
     if (!confirm('Hapus user ini?')) return;
@@ -74,12 +48,22 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
     setAdmins((prev) => [{ ...u, role: 'admin' }, ...prev]);
   };
 
-  const handleAddAdmin = () => {
-    const name = window.prompt('Nama admin:');
-    if (!name) return;
-    const email = window.prompt('Email admin:');
+  const handleAddAdmin = () => openAddModal('admin');
+
+  const handleSubmitAdd = (e) => {
+    e && e.preventDefault();
+    const { name, email, phone } = form;
+    if (!name || !email) {
+      alert('Mohon isi minimal Nama dan Email.');
+      return;
+    }
     const id = gen4Digit();
-    setAdmins((prev) => [{ userId: id, name, email: email || '', role: 'admin' }, ...prev]);
+    if (modalType === 'user') {
+      setUsers((prev) => [{ userId: id, name, email, phone: phone || '', role: 'user' }, ...prev]);
+    } else {
+      setAdmins((prev) => [{ userId: id, name, email, phone: phone || '', role: 'admin' }, ...prev]);
+    }
+    setModalOpen(false);
   };
 
   const handleDeleteAdmin = (id) => {
@@ -154,19 +138,7 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
       <main className="admin-main">
         <header className="admin-header">
           <h1>{activeTab === 'users' ? 'Manage Users' : activeTab === 'admins' ? 'Manage Admins' : activeTab === 'events' ? 'Daftar Event' : activeTab === 'bookings' ? 'Riwayat Pemesanan' : 'Overview'}</h1>
-          <div className="flex items-center gap-3">
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={activeTab === 'users' ? 'Cari user (nama, email, ID)...' : 'Cari admin (nama, email, ID)...'} className="input-search w-full max-w-md" />
-            <div className="text-sm text-slate-500">Menampilkan {activeTab === 'users' ? filteredUsers.length : filteredAdmins.length} / {activeTab === 'users' ? users.length : admins.length}</div>
-          </div>
         </header>
-
-        {/* Floating action buttons (visible per-tab) */}
-        {(activeTab === 'users' || activeTab === 'admins') && (
-          <div className="fab-container no-print" aria-hidden>
-            {activeTab === 'users' && <button onClick={() => openAddModal('user')} className="fab-btn" title="Tambah User">+ User</button>}
-            {activeTab === 'admins' && <button onClick={() => openAddModal('admin')} className="fab-btn fab-admin" title="Tambah Admin">+ Admin</button>}
-          </div>
-        )}
 
         {activeTab === 'overview' && (
           <section className="stats-grid">
@@ -194,6 +166,18 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
 
         {activeTab === 'users' && (
           <section className="panel">
+            <div className="panel-controls">
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={'Cari user (nama, email, ID)...'} className="input-search" />
+                <div className="text-sm text-slate-500">Menampilkan {filteredUsers.length} / {users.length}</div>
+              </div>
+              <div>
+                <button className="btn-add" onClick={() => openAddModal('user')}>
+                  <Plus size={16} />
+                  <span style={{ fontWeight: 800 }}>Add User</span>
+                </button>
+              </div>
+            </div>
             <table className="table">
               <thead>
                 <tr>
@@ -224,6 +208,18 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
 
         {activeTab === 'admins' && (
           <section className="panel">
+            <div className="panel-controls">
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={'Cari admin (nama, email, ID)...'} className="input-search" />
+                <div className="text-sm text-slate-500">Menampilkan {filteredAdmins.length} / {admins.length}</div>
+              </div>
+              <div>
+                <button className="btn-add" onClick={() => openAddModal('admin')}>
+                  <Plus size={16} />
+                  <span style={{ fontWeight: 800 }}>Add Admin</span>
+                </button>
+              </div>
+            </div>
             <table className="table">
               <thead>
                 <tr>
@@ -265,39 +261,38 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
           </section>
         )}
 
-        {/* Add / Edit modal */}
-        {isModalOpen && (
-          <div className="modal-overlay" role="dialog" aria-modal="true">
-            <div className="modal">
-              <form onSubmit={handleSubmitModal} className="modal-form">
-                <h3>{modalMode === 'user' ? 'Tambah User' : 'Tambah Admin'}</h3>
-
-                <label>
-                  Nama
-                  <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-                </label>
-
-                <label>
-                  Email
-                  <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
-                </label>
-
-                <label>
-                  Nomor WhatsApp
-                  <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="Contoh: 081234567890" />
-                </label>
-
-                <div className="modal-actions">
-                  <button type="button" className="btn-cancel" onClick={closeModal}>Batal</button>
-                  <button type="submit" className="btn btn-primary">Tambah</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
         <div style={{ height: 40 }} />
       </main>
+
+      {modalOpen && (
+        <div className="modal-overlay" onMouseDown={() => setModalOpen(false)}>
+          <div className="modal" onMouseDown={(e) => e.stopPropagation()}>
+            <form className="modal-form" onSubmit={handleSubmitAdd}>
+              <h3>{modalType === 'user' ? 'Tambah User' : 'Tambah Admin'}</h3>
+
+              <label>
+                Nama
+                <input value={form.name} onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))} placeholder="Nama lengkap" />
+              </label>
+
+              <label>
+                Email
+                <input value={form.email} onChange={(e) => setForm((s) => ({ ...s, email: e.target.value }))} placeholder="email@contoh.com" />
+              </label>
+
+              <label>
+                Nomor HP
+                <input value={form.phone} onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))} placeholder="08xxxxxxxx" />
+              </label>
+
+              <div className="modal-actions">
+                <button type="button" className="btn-cancel" onClick={() => setModalOpen(false)}>Batal</button>
+                <button className="btn-action promote" type="submit">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
