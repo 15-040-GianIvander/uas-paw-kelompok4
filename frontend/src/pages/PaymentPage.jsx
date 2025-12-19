@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import shareqr from '../assets/qris/shareqr.png';
+import shareqr from '../assets/qris/shareqr.jpeg';
 
 function formatCurrency(v) {
   return v.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });

@@ -11,9 +11,10 @@ const BookingHistory = () => {
       date: '20 Des 2024',
       time: '19:00 WIB',
       location: 'PKOR Way Halim',
-      status: 'Confirmed', 
+      status: 'Confirmed',
       qty: 2,
       total: 300000,
+      buyer: 'Ayu Pratiwi'
     },
     {
       id: 'INV-2024002',
@@ -24,6 +25,7 @@ const BookingHistory = () => {
       status: 'Pending',
       qty: 1,
       total: 50000,
+      buyer: 'Rian Saputra'
     },
     {
        id: 'INV-2024003',
@@ -34,6 +36,7 @@ const BookingHistory = () => {
        status: 'Cancelled',
        qty: 1,
        total: 0,
+       buyer: 'Dewi Lestari'
     }
   ];
 
@@ -171,10 +174,10 @@ const BookingHistory = () => {
                                 {/* BAGIAN KANAN: Tombol Aksi (Compact) */}
                                 <div className="flex-shrink-0">
                                     {item.status === 'Confirmed' ? (
-                                        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 md:px-6 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-bold shadow-lg shadow-blue-200/50 transition-all active:scale-95">
+                                        <Link to={`/ticket/${item.id}`} state={{ buyerName: item.buyer, eventName: item.eventName, date: item.date, time: item.time, location: item.location, qty: item.qty, total: item.total }} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 md:px-6 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-bold shadow-lg shadow-blue-200/50 transition-all active:scale-95">
                                             <QrCode size={18}/> 
                                             <span className="hidden sm:inline">Lihat</span> E-Ticket
-                                        </button>
+                                        </Link>
                                     ) : item.status === 'Pending' ? (
                                         <button className="flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white px-5 md:px-6 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-bold shadow-lg shadow-amber-200/50 transition-all active:scale-95">
                                             Bayar <span className="hidden sm:inline">Sekarang</span> <ChevronRight size={16}/>
