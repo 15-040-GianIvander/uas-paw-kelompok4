@@ -35,6 +35,10 @@ def main(global_config, **settings):
         # Ini agar gambar bisa diakses via URL: http://localhost:6543/static/uploads/namafile.jpg
         config.add_static_view(name='static', path='app:static')
 
+        # --- ROUTE PROFILE (BARU) ---
+        config.add_route('profile', '/api/profile') # Bisa GET (Lihat) & POST (Edit)
+        # ----------------------------
+
        # --- ROUTING ---
         config.add_route('register', '/api/register')
         config.add_route('login', '/api/login')

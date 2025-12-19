@@ -20,6 +20,10 @@ class User(Base):
     password = Column(String, nullable=False)
     role = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    bio = Column(String, nullable=True)          # Untuk "Bio Singkat"
+    phone_number = Column(String, nullable=True) # Untuk "Nomor Telepon"
+    location = Column(String, nullable=True)     # Untuk "Domisili / Lokasi"
+    profile_picture = Column(String, nullable=True) # Untuk "Foto Profil"
     
     # --- FORGOT PASSWORD ---
     reset_token = Column(String, nullable=True)        # Menyimpan kode unik   
