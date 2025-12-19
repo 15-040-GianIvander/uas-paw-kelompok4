@@ -229,6 +229,15 @@ input:focus {
   .auth-left { display: none; }
 }
 
+/* Print rules: hide nav/footer and simplify page for PDF */
+@media print {
+  .no-print { display: none !important; }
+  /* Ensure white backgrounds and remove shadows for cleaner print */
+  body, .page-bg { background: #ffffff !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
+  * { box-shadow: none !important; }
+  a::after { content: "" !important; }
+}
+
 .auth-right {
   padding: 36px;
 }
