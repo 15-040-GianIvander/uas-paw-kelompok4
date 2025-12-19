@@ -1,0 +1,45 @@
+.page-bg .help-container { min-height: 100vh; display: grid; place-items: center; padding: 48px 20px; margin: 0 auto; width: 100%; max-width: 1200px; }
+
+.help-container { width: 100%; max-width: 980px; }
+
+.help-card {
+  max-width: 760px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(16,24,40,0.06);
+  border: 1px solid rgba(15,23,42,0.04);
+  overflow: hidden;
+}
+
+.help-header { padding: 18px 22px; border-bottom: 1px solid #f3f4f6; display: flex; gap: 16px; align-items: center; }
+.help-header h2 { margin: 0 0 4px 0; font-family: var(--font-header); }
+.help-header p { margin: 0; color: var(--text-muted); }
+
+.help-back { background: transparent; border: none; color: var(--text-muted); font-weight: 700; cursor: pointer; padding: 6px 8px; border-radius: 8px; margin-right: 8px; }
+.help-back:hover { color: #2563eb; background: #f3f6ff; }
+
+.help-body { padding: 22px; }
+.hc-grid { display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
+.hc-grid.single { grid-template-columns: 1fr; justify-items: center; }
+
+.hc-contact { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 520px; margin: 0 auto; }
+.hc-item { display: flex; gap: 12px; align-items: center; background: #fbfdff; padding: 12px; border-radius: 10px; border: 1px solid #f1f6ff; }
+.hc-icon { color: #2563eb; }
+.hc-title { font-weight: 700; color: var(--text-main); }
+.hc-link { color: #2563eb; text-decoration: none; font-weight: 600; }
+.hc-text { color: var(--text-muted); }
+
+.hc-form { display: flex; flex-direction: column; gap: 12px; }
+.hc-label { font-size: 0.95rem; font-weight: 700; color: var(--text-main); }
+.hc-field { display: flex; flex-direction: column; gap: 6px; }
+.hc-field-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+.hc-select, .hc-textarea { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e6e9ef; background: #fff; font-size: 0.95rem; outline: none; }
+.hc-select:focus, .hc-textarea:focus { box-shadow: 0 8px 20px rgba(37,99,235,0.06); border-color: #2563eb; }
+
+.hc-submit { background: #2563eb; color: white; border: none; padding: 12px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(37,99,235,0.12); }
+
+@media (max-width: 860px) {
+  .hc-grid { grid-template-columns: 1fr; }
+  .help-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+}

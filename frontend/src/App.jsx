@@ -16,6 +16,8 @@ import BookingHistory from './pages/BookingHistory';
 import UserProfile from './pages/UserProfile';
 import EditProfile from './pages/EditProfile'; // <--- 1. IMPORT FILE INI
 import ForgotPassword from './pages/ForgotPassword'; // <-- Forgot Password page
+import NotificationSettings from './pages/NotificationSettings'; // <-- Notification Settings page
+import HelpCenter from './pages/HelpCenter'; // <-- Help & Support
 
 import OrganizerDashboard from './pages/Dashboard';
 import DashboardAdmin from './pages/DashboardAdmin';
@@ -46,6 +48,8 @@ function App() {
         {/* 2. TAMBAHKAN ROUTE INI DI SINI */}
         <Route path="/profile/edit" element={<EditProfile />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/notifications" element={<NotificationSettings />} />
+        <Route path="/help" element={<HelpCenter />} />
 
         {/* === Organizer Routes === */}
         <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />

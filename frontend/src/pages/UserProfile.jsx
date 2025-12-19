@@ -146,14 +146,14 @@ const UserProfile = () => {
                                 <span className="text-slate-600 font-medium text-sm group-hover:text-blue-600 transition">Ubah Password</span>
                                 <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600"/>
                             </Link>
-                            <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white hover:shadow-sm transition text-left group">
+                            <Link to="/notifications" className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white hover:shadow-sm transition text-left group" style={{ textDecoration: 'none' }}>
                                 <span className="text-slate-600 font-medium text-sm group-hover:text-blue-600 transition">Notifikasi</span>
                                 <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600"/>
-                            </button>
-                            <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white hover:shadow-sm transition text-left group">
+                            </Link>
+                            <Link to="/help" className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white hover:shadow-sm transition text-left group" style={{ textDecoration: 'none' }}>
                                 <span className="text-slate-600 font-medium text-sm group-hover:text-blue-600 transition">Bantuan & Support</span>
                                 <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600"/>
-                            </button>
+                            </Link>
                         </div>
 
                         <button className="w-full flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-red-100 text-red-600 hover:bg-red-50 transition font-bold text-sm mt-4">

@@ -28,6 +28,10 @@ const ForgotPassword = () => {
     return (
       <div className="forgot-password-container">
         <div className="fp-card">
+          <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 8 }}>
+            <button className="fp-back" onClick={() => navigate(-1)}>Kembali</button>
+          </div>
+
           <div className="fp-success-icon">
             <CheckCircle size={58} color="#2563eb" />
           </div>
@@ -45,6 +49,10 @@ const ForgotPassword = () => {
   return (
     <div className="forgot-password-container">
       <div className="fp-card">
+        <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 8 }}>
+          <button className="fp-back" onClick={() => navigate(-1)}>Kembali</button>
+        </div>
+
         <h2 className="fp-title">Lupa Password?</h2>
         <p className="fp-desc">Masukkan email yang terdaftar. Kami akan mengirimkan tautan untuk mereset password Anda.</p>
 
