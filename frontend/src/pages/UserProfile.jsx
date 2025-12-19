@@ -142,10 +142,10 @@ const UserProfile = () => {
                         </h3>
                         
                         <div className="bg-slate-50 rounded-2xl p-2 space-y-1">
-                            <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white hover:shadow-sm transition text-left group">
+                            <Link to="/forgot-password" className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white hover:shadow-sm transition text-left group" style={{ textDecoration: 'none' }}>
                                 <span className="text-slate-600 font-medium text-sm group-hover:text-blue-600 transition">Ubah Password</span>
                                 <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600"/>
-                            </button>
+                            </Link>
                             <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white hover:shadow-sm transition text-left group">
                                 <span className="text-slate-600 font-medium text-sm group-hover:text-blue-600 transition">Notifikasi</span>
                                 <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600"/>

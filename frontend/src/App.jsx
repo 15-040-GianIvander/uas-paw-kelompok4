@@ -15,6 +15,7 @@ import BookingForm from './pages/BookingForm';
 import BookingHistory from './pages/BookingHistory';
 import UserProfile from './pages/UserProfile';
 import EditProfile from './pages/EditProfile'; // <--- 1. IMPORT FILE INI
+import ForgotPassword from './pages/ForgotPassword'; // <-- Forgot Password page
 
 import OrganizerDashboard from './pages/Dashboard';
 import DashboardAdmin from './pages/DashboardAdmin';
@@ -44,6 +45,7 @@ function App() {
         
         {/* 2. TAMBAHKAN ROUTE INI DI SINI */}
         <Route path="/profile/edit" element={<EditProfile />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* === Organizer Routes === */}
         <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
