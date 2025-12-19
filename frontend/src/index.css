@@ -118,6 +118,14 @@ input:focus {
   background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
 }
 
+/* Global page background (use on any page container to match booking gradient) */
+.page-bg {
+  background: linear-gradient(180deg, #326cc3 0%, #96cfff 36%, #cfeaff 72%, #ffffff 100%);
+  min-height: 100vh;
+  background-repeat: no-repeat;
+}
+
+
 .auth-card {
   width: 100%;
   max-width: 780px; /* reduced from 920px */

@@ -27,7 +27,7 @@ const EventDetail = () => {
   const quotaPercentage = (event.quota / event.totalQuota) * 100;
 
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <div className="min-h-screen page-bg pb-20">
       
       {/* HERO SECTION */}
       <div className="relative w-full h-[500px] bg-slate-200">
