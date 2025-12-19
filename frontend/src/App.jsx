@@ -14,6 +14,7 @@ import Register from './pages/Register';
 
 import BookingForm from './pages/BookingForm';
 import BookingHistory from './pages/BookingHistory';
+import MyBookings from './pages/MyBookings';
 import UserProfile from './pages/UserProfile';
 import EditProfile from './pages/EditProfile'; // <--- 1. IMPORT FILE INI
 import ForgotPassword from './pages/ForgotPassword'; // <-- Forgot Password page
@@ -47,7 +48,8 @@ function App() {
 
         {/* === User Routes === */}
         <Route path="/booking/:id" element={<BookingForm />} />
-        <Route path="/my-bookings" element={<BookingHistory />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/booking-history" element={<BookingHistory />} />
         <Route path="/profile" element={<UserProfile />} />
         
         {/* 2. TAMBAHKAN ROUTE INI DI SINI */}

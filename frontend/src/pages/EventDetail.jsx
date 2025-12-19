@@ -1,27 +1,66 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 // Tambahkan import icon baru: Ticket, CheckCircle2, ChevronRight, Sparkles
 import { MapPin, Calendar, Clock, Share2, Heart, ShieldCheck, User, Ticket, CheckCircle2, ChevronRight, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { createBooking } from '../services/bookingService';
 
 const EventDetail = () => {
   const { id } = useParams();
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [loadingBook, setLoadingBook] = useState(false);
+  const [bookError, setBookError] = useState(null);
 
-  // Dummy Data
-  const event = {
-    id: 1,
-    title: "Evoria Music Festival 2024",
-    organizer: "Evoria Entertainment",
-    image: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=1200",
-    description: "Rasakan euforia musik indie terbesar tahun ini! Evoria Music Festival menghadirkan kolaborasi epik antara musisi papan atas dan seniman visual dalam satu panggung spektakuler. Nikmati pengalaman audio-visual yang memukau di tengah kota.",
-    date: "20 Desember 2024",
-    time: "19:00 - 23:00 WIB",
-    location: "PKOR Way Halim, Bandar Lampung",
-    price: 150000,
-    quota: 45, // Anggap total kuota 100, sisa 45
-    totalQuota: 100, 
-    category: "Music",
-    tags: ["Concert", "Indie", "Outdoor"]
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    import('../services/eventService').then(({ getEventById }) => {
+      return getEventById(id);
+    }).then((data) => {
+      if (!mounted) return;
+      // format date and time for display and ensure price field uses ticket_price
+      const formatted = { ...data };
+      if (data && data.date) {
+        const d = new Date(data.date);
+        formatted.date = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        formatted.time = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      }
+      // normalize price field
+      formatted.ticket_price = data.ticket_price ?? data.price ?? 0;
+      formatted.price = formatted.ticket_price;
+      setEvent(formatted);
+    }).catch((err) => {
+      setError(err?.message || 'Gagal memuat event.');
+    }).finally(() => setLoading(false));
+    return () => (mounted = false);
+  }, [id]);
+
+  const handleBookNow = async () => {
+    setBookError(null);
+    setLoadingBook(true);
+    try {
+      // create booking with qty=1 and QRIS by default
+      const res = await createBooking({ event_id: event.id, quantity: 1, payment_method: 'qris', whatsapp: '-' });
+      // backend returns booking_id and payment_info
+      const bookingId = res.booking_id || res.id || (res.data && res.data.booking_id);
+      const paymentInfo = res.payment_info || res.paymentInfo || null;
+      const total = paymentInfo?.total_price ?? (event.ticket_price || event.price || 0);
+      navigate(`/payment/${bookingId}`, { state: { bookingId, bookingIdParam: bookingId, qty: 1, total, pricePer: (event.ticket_price || event.price || 0), eventTitle: event.title, date: event.date, time: event.time, location: event.location, paymentInfo } });
+    } catch (err) {
+      setBookError(err?.message || 'Gagal membuat booking');
+    } finally {
+      setLoadingBook(false);
+    }
   };
+
+  if (loading) return <div className="min-h-screen page-bg pb-20"><div className="max-w-7xl mx-auto px-6 py-20 text-center">Memuat detail event...</div></div>;
+  if (error) return <div className="min-h-screen page-bg pb-20"><div className="max-w-7xl mx-auto px-6 py-20 text-center text-red-600">{error}</div></div>;
+  if (!event) return <div className="min-h-screen page-bg pb-20"><div className="max-w-7xl mx-auto px-6 py-20 text-center">Event tidak ditemukan.</div></div>;
 
   // Hitung persentase sisa kuota untuk progress bar
   const quotaPercentage = (event.quota / event.totalQuota) * 100;
@@ -31,7 +70,7 @@ const EventDetail = () => {
       
       {/* HERO SECTION */}
       <div className="relative w-full h-[500px] bg-slate-200">
-        <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+        <img src={event.image || event.image_url || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=1200'} alt={event.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-90"></div>
         
         {/* Navbar Placeholder Fix (Agar tidak ketutup di mode mobile) */}
@@ -63,9 +102,9 @@ const EventDetail = () => {
             <div>
                <div className="flex gap-2 mb-4">
                   <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1">
-                    <Sparkles size={12} /> {event.category}
+                    <Sparkles size={12} /> {event.category || 'General'}
                   </span>
-                  {event.tags.map((tag, idx) => (
+                  {(event.tags || []).map((tag, idx) => (
                       <span key={idx} className="bg-white border border-slate-200 text-slate-600 px-3 py-1 rounded-full text-xs font-medium">{tag}</span>
                   ))}
                </div>
@@ -136,7 +175,7 @@ const EventDetail = () => {
                         <div className="flex items-end gap-1">
                              {/* Teks Gradient */}
                              <h2 className="text-[2.75rem] font-extrabold font-outfit text-transparent bg-clip-text bg-gradient-to-r from-blue-800 via-blue-600 to-blue-500 leading-none">
-                                Rp {event.price.toLocaleString('id-ID').replace(',00', '')}
+                                Rp {(event.ticket_price || event.price || 0).toLocaleString('id-ID').replace(',00', '')}
                             </h2>
                             <span className="text-slate-400 font-bold pb-2 text-lg">/pax</span>
                         </div>
@@ -177,25 +216,16 @@ const EventDetail = () => {
                     </div>
 
                     {/* Tombol CTA yang "Wah" */}
-<Link 
-    to={`/booking/${event.id}`} 
-    // PERUBAHAN DI SINI:
-    // 1. ganti 'justify-center' jadi 'justify-between'
-    // 2. tambah 'px-8' (padding kanan kiri)
-    className="group relative w-full flex items-center justify-between px-8 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white py-4 rounded-2xl font-bold font-outfit text-xl overflow-hidden shadow-lg shadow-blue-500/30 hover:shadow-blue-600/50 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]"
->
+<button onClick={handleBookNow} className="group relative w-full flex items-center justify-between px-8 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white py-4 rounded-2xl font-bold font-outfit text-xl overflow-hidden shadow-lg shadow-blue-500/30 hover:shadow-blue-600/50 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]" disabled={loadingBook}>
     {/* Teks di Kiri */}
-    <span className="relative z-10">
-        Book Now
-    </span>
-
+    <span className="relative z-10">{loadingBook ? 'Memproses...' : 'Book Now'}</span>
     {/* Ikon di Kanan */}
     <ChevronRight size={24} className="relative z-10 group-hover:translate-x-1 transition-transform"/>
-    
     {/* Efek Kilau saat Hover (Tetap Sama) */}
     <div className="absolute inset-0 h-full w-full scale-0 rounded-2xl transition-all duration-500 group-hover:scale-150 group-hover:bg-white/20 opacity-0 group-hover:opacity-100"></div>
-</Link>
+</button>
                     
+                    {bookError && <div className="text-sm text-red-600 text-center mt-3">{bookError}</div>}
                     <p className="text-xs text-center text-slate-400 mt-5 px-4 font-medium">
                         Pembayaran 100% Aman & Terpercaya via Evoria.
                     </p>
@@ -205,6 +235,7 @@ const EventDetail = () => {
 
         </div>
       </div>
+      {showModal && <BookingModal event={event} onClose={() => setShowModal(false)} onBooked={() => { window.dispatchEvent(new Event('booking-created')); }} />}
     </div>
   );
 };

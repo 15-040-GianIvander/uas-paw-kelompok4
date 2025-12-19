@@ -1,23 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
 import { Plus, Trash2, Users, ShieldX, DollarSign, Calendar } from 'lucide-react';
 import DashboardChart from '../components/DashboardChart';
+import * as superadminService from '../services/superadminService';
+import * as eventService from '../services/eventService';
 
-const seedUsers = [
-  { userId: '1001', name: 'Ayu Pratiwi', email: 'ayu@example.com', role: 'user' },
-  { userId: '1002', name: 'Rian Saputra', email: 'rian@example.com', role: 'user' },
-  { userId: '1003', name: 'Dewi Lestari', email: 'dewi@example.com', role: 'user' },
-];
+// initial state will be loaded from API
+const seedUsers = [];
+const seedAdmins = [];
 
-const seedAdmins = [
-  { userId: '2001', name: 'Admin Satu', email: 'admin1@example.com', role: 'admin' },
-];
+// events will be fetched from API
+const dummyEvents = []; // keep variable name for backward compat
 
-const dummyEvents = [
-  { id: 'E-001', title: 'Konser Indie Jakarta', date: '2025-12-12', venue: 'Istora Senayan', price: 150000, img: '/assets/event-list/concert1.png' },
-  { id: 'E-002', title: 'Festival Musik Selatan', date: '2026-01-05', venue: 'Lapangan Merdeka', price: 120000, img: '/assets/event-list/concert2.png' },
-  { id: 'E-003', title: 'Acoustic Night', date: '2026-02-20', venue: 'Cafe Kecil', price: 75000, img: '/assets/event-list/concert3.jpg' },
-];
+
 
 const dummyBookings = [
   { id: 'B-1001', userId: '1001', user: 'Ayu Pratiwi', eventName: 'Konser Indie Jakarta', orderDate: '2025-11-01', status: 'Paid' },
@@ -35,6 +31,7 @@ function gen4Digit() {
 }
 
 export default function DashboardSuperAdmin({ initialTab = 'users' }) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [users, setUsers] = useState(seedUsers);
   const [admins, setAdmins] = useState(seedAdmins);
@@ -42,65 +39,146 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState('user'); // 'user' or 'admin'
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [usersError, setUsersError] = useState(null);
+
+  // Fetch live users from backend (requires superadmin token)
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    setUsersError(null);
+
+    // Quick client-side guard: ensure current role is superadmin
+    const myRole = localStorage.getItem('user_role');
+    if (myRole !== 'superadmin') {
+      setUsersError('Access denied: login as superadmin to manage users');
+      setLoadingUsers(false);
+      return;
+    }
+
+    try {
+      const data = await superadminService.getAllUsers();
+      setUsers(data.filter(u => u.role === 'user').map(u => ({ userId: u.id, name: u.name, email: u.email, role: u.role })));
+      setAdmins(data.filter(u => u.role === 'admin' || u.role === 'superadmin').map(u => ({ userId: u.id, name: u.name, email: u.email, role: u.role })));
+    } catch (err) {
+      // Improve message for Forbidden
+      if (err && err.message && err.message.toLowerCase().includes('forbidden')) {
+        setUsersError('Forbidden: your account is not a superadmin (login with superadmin account)');
+      } else {
+        setUsersError(err?.message || 'Gagal memuat user');
+      }
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   // simple handlers that operate on local state (frontend simulation)
   const openAddModal = (type) => {
     setModalType(type);
     setForm({ name: '', email: '', phone: '' });
     setModalOpen(true);
-  };
+  }; 
 
   const handleAddUser = () => openAddModal('user');
 
-  const handleDeleteUser = (id) => {
+  const handleDeleteUser = async (id) => {
     if (!confirm('Hapus user ini?')) return;
-    setUsers((prev) => prev.filter((u) => u.userId !== id));
+    try {
+      await superadminService.deleteUser(id);
+      await fetchUsers();
+    } catch (err) {
+      alert(err?.message || 'Gagal menghapus user');
+    }
   };
 
-  const handlePromoteToAdmin = (id) => {
+  const handlePromoteToAdmin = async (id) => {
     const u = users.find((x) => x.userId === id);
     if (!u) return;
     if (!confirm(`Jadikan ${u.name} sebagai Admin?`)) return;
-    setUsers((prev) => prev.filter((x) => x.userId !== id));
-    setAdmins((prev) => [{ ...u, role: 'admin' }, ...prev]);
+    try {
+      await superadminService.updateUserRole(id, 'admin');
+      await fetchUsers();
+    } catch (err) {
+      alert(err?.message || 'Gagal mempromosikan user');
+    }
   };
 
   const handleAddAdmin = () => openAddModal('admin');
 
-  const handleSubmitAdd = (e) => {
+  const handleSubmitAdd = async (e) => {
     e && e.preventDefault();
     const { name, email, phone } = form;
     if (!name || !email) {
       alert('Mohon isi minimal Nama dan Email.');
       return;
     }
-    const id = gen4Digit();
-    if (modalType === 'user') {
-      setUsers((prev) => [{ userId: id, name, email, phone: phone || '', role: 'user' }, ...prev]);
-    } else {
-      setAdmins((prev) => [{ userId: id, name, email, phone: phone || '', role: 'admin' }, ...prev]);
+    try {
+      const tmpPass = Math.random().toString(36).slice(-8) || 'changeme123';
+      const payload = { name, email, password: tmpPass, role: modalType === 'admin' ? 'admin' : 'user' };
+      await superadminService.createUser(payload);
+      alert(`User dibuat dengan password sementara: ${tmpPass}`);
+      await fetchUsers();
+      setModalOpen(false);
+    } catch (err) {
+      alert(err?.message || 'Gagal membuat user');
     }
-    setModalOpen(false);
   };
 
-  const handleDeleteAdmin = (id) => {
+  const handleDeleteAdmin = async (id) => {
     if (!confirm('Hapus admin ini?')) return;
-    setAdmins((prev) => prev.filter((a) => a.userId !== id));
+    try {
+      await superadminService.deleteUser(id);
+      await fetchUsers();
+    } catch (err) {
+      alert(err?.message || 'Gagal menghapus admin');
+    }
   };
 
-  const handleDemoteAdmin = (id) => {
+  const handleDemoteAdmin = async (id) => {
     const a = admins.find((x) => x.userId === id);
     if (!a) return;
     if (!confirm(`Demosi ${a.name} menjadi user biasa?`)) return;
-    setAdmins((prev) => prev.filter((x) => x.userId !== id));
-    setUsers((prev) => [{ ...a, role: 'user' }, ...prev]);
+    try {
+      await superadminService.updateUserRole(id, 'user');
+      await fetchUsers();
+    } catch (err) {
+      alert(err?.message || 'Gagal demosi admin');
+    }
   };
 
   // totals depend on events/bookings so are declared after they are initialized below
 
-  // events & bookings (match DashboardAdmin)
-  const [events, setEvents] = useState(dummyEvents);
+  // events & bookings (fetched from API)
+  const [events, setEvents] = useState([]);
   const [bookings, setBookings] = useState(dummyBookings);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  const [eventsError, setEventsError] = useState(null);
+
+  const fetchEvents = async () => {
+    setLoadingEvents(true); setEventsError(null);
+    try {
+      const list = await eventService.getEvents();
+      // map backend shape to our table shape and include formatted date/time (keep rawDate for editing)
+      setEvents(list.map(ev => ({
+        id: ev.id,
+        title: ev.title,
+        date: ev.date ? new Date(ev.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : ev.date,
+        time: ev.date ? new Date(ev.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '',
+        rawDate: ev.date,
+        venue: ev.location,
+        price: ev.ticket_price,
+        capacity: ev.capacity,
+        img: ev.image_url
+      })));
+    } catch (err) {
+      setEventsError(err?.message || 'Gagal memuat event');
+    } finally { setLoadingEvents(false); }
+  };
+
+  useEffect(() => { fetchEvents(); }, []);
 
   const totals = useMemo(() => ({
     users: users.length,
@@ -113,13 +191,13 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
   // modal & form for events
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
-  const [eventForm, setEventForm] = useState({ title: '', date: '', venue: '', price: '', img: '' });
+  const [eventForm, setEventForm] = useState({ title: '', date: '', venue: '', price: '', capacity: '', img: '' });
   const [originalImg, setOriginalImg] = useState(null);
 
   const openAddEventModal = () => {
     setEditingEvent(null);
     setOriginalImg(null);
-    setEventForm({ title: '', date: '', venue: '', price: '', img: '' });
+    setEventForm({ title: '', date: '', venue: '', price: '', capacity: '', img: '' });
     setIsEventModalOpen(true);
   };
 
@@ -128,9 +206,18 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
     if (!ev) return;
     setEditingEvent(id);
     setOriginalImg(ev.img || null);
-    setEventForm({ title: ev.title, date: ev.date, venue: ev.venue, price: String(ev.price), img: ev.img });
+    setEventForm({
+      title: ev.title,
+      date: ev.rawDate ? ev.rawDate.slice(0,10) : ev.date,
+      venue: ev.venue,
+      price: String(ev.price),
+      capacity: String(ev.capacity || ''),
+      img: ev.img
+    });
     setIsEventModalOpen(true);
   };
+
+
 
   const closeEventModal = () => {
     if (!editingEvent && eventForm.img && eventForm.img.startsWith && eventForm.img.startsWith('blob:')) {
@@ -141,7 +228,7 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
     }
     setIsEventModalOpen(false);
     setEditingEvent(null);
-    setEventForm({ title: '', date: '', venue: '', price: '', img: '' });
+    setEventForm({ title: '', date: '', time: '', venue: '', price: '', capacity: '', img: '' });
     setOriginalImg(null);
   };
 
@@ -155,37 +242,56 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
     setEventForm((f) => ({ ...f, img: url, file }));
   };
 
-  const handleSaveEvent = (ev) => {
+  const handleSaveEvent = async (ev) => {
     ev.preventDefault();
     if (!eventForm.title.trim() || !eventForm.date || !eventForm.venue || !eventForm.price) return alert('Lengkapi semua field.');
 
-    if (editingEvent) {
-      setEvents((prev) => prev.map((e) => {
-        if (e.id !== editingEvent) return e;
-        if (originalImg && originalImg.startsWith && originalImg.startsWith('blob:') && originalImg !== eventForm.img) {
-          try { URL.revokeObjectURL(originalImg); } catch (err) { /* ignore */ }
-        }
-        return { ...e, title: eventForm.title, date: eventForm.date, venue: eventForm.venue, price: Number(eventForm.price), img: eventForm.img };
-      }));
-    } else {
-      const maxIndex = events.reduce((m, x) => Math.max(m, Number(x.id.split('-')[1] || 0)), 0);
-      const nextId = 'E-' + String(maxIndex + 1).padStart(3, '0');
-      setEvents((prev) => [{ id: nextId, title: eventForm.title, date: eventForm.date, venue: eventForm.venue, price: Number(eventForm.price), img: eventForm.img || '/assets/event-list/festival-musik.png' }, ...prev]);
-    }
+    try {
+      const formData = new FormData();
+      // date might be yyyy-mm-dd from <input type=date>, convert to "YYYY-MM-DD HH:MM"
+      const dateValue = eventForm.date && eventForm.date.length === 10 ? `${eventForm.date} ${eventForm.time || '00:00'}` : eventForm.date;
+      formData.append('title', eventForm.title);
+      formData.append('date', dateValue);
+      formData.append('location', eventForm.venue);
+      formData.append('capacity', eventForm.capacity || '100');
+      formData.append('ticket_price', eventForm.price);
+      if (eventForm.file) formData.append('image', eventForm.file);
 
-    setOriginalImg(null);
-    setIsEventModalOpen(false);
+      if (editingEvent) {
+        const updated = await eventService.updateEvent(editingEvent, formData);
+        alert('Event updated successfully');
+        // attach time to updated snapshot for immediate UI merge
+        try { const uWithTime = { ...(updated || {}), time: eventForm.time || '' }; localStorage.setItem('last_updated_event', JSON.stringify(uWithTime)); localStorage.setItem('events_updated_at', String(Date.now())); } catch(e) { /* ignore */ }
+        // dispatch same-tab custom event so EventList updates immediately
+        try { window.dispatchEvent(new Event('events-updated')); } catch(e) {}
+      } else {
+        const created = await eventService.createEvent(formData);
+        alert('Event created successfully');
+        // attach time to created snapshot for immediate UI merge
+        try { const cWithTime = { ...(created || {}), time: eventForm.time || '' }; localStorage.setItem('last_created_event', JSON.stringify(cWithTime)); localStorage.setItem('events_updated_at', String(Date.now())); } catch(e) { /* ignore */ }
+        try { window.dispatchEvent(new Event('events-updated')); } catch(e) {}
+      }
+
+      await fetchEvents();
+      setIsEventModalOpen(false);
+      setOriginalImg(null);
+    } catch (err) {
+      alert(err?.message || 'Gagal menyimpan event');
+    }
   };
 
-  const handleDeleteEvent = (id) => {
+
+  const handleDeleteEvent = async (id) => {
     if (!confirm('Hapus event ini?')) return;
-    setEvents((prev) => {
-      const target = prev.find((p) => p.id === id);
-      if (target && target.img && target.img.startsWith && target.img.startsWith('blob:')) {
-        try { URL.revokeObjectURL(target.img); } catch (e) { /* ignore */ }
-      }
-      return prev.filter((e) => e.id !== id);
-    });
+    try {
+      await eventService.deleteEvent(id);
+      await fetchEvents();
+      try { localStorage.setItem('last_deleted_event', JSON.stringify({ id })); localStorage.setItem('events_updated_at', String(Date.now())); } catch(e) { /* ignore */ }
+      try { window.dispatchEvent(new Event('events-updated')); } catch(e) {}
+      alert('Event deleted');
+    } catch (err) {
+      alert(err?.message || 'Gagal menghapus event');
+    }
   };
 
   const filteredBookings = useMemo(() => {
@@ -303,8 +409,16 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                 <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={'Cari user (nama, email, ID)...'} className="input-search" />
                 <div className="text-sm text-count">Menampilkan {filteredUsers.length} / {users.length}</div>
+                {loadingUsers && <div className="text-sm text-blue-600">Memuat...</div>}
+                {usersError && (
+                  <div className="text-sm text-red-600" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <span>{usersError}</span>
+                    <button className="btn btn-secondary" onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user_role'); localStorage.removeItem('user_id'); navigate('/login'); }}>Login as Superadmin</button>
+                  </div>
+                )}
               </div>
-              <div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button className="btn" onClick={fetchUsers} disabled={loadingUsers}>Refresh</button>
                 <button className="btn-add" onClick={() => openAddModal('user')}>
                   <Plus size={16} />
                   <span style={{ fontWeight: 800 }}>Add User</span>
@@ -388,8 +502,11 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                 <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={'Cari event (judul, venue, ID)...'} className="input-search" />
                 <div className="text-sm text-count">Menampilkan {events.length} events</div>
+                {loadingEvents && <div className="text-sm text-blue-600">Memuat...</div>}
+                {eventsError && <div className="text-sm text-red-600">{eventsError}</div>}
               </div>
-              <div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button className="btn" onClick={fetchEvents} disabled={loadingEvents}>Refresh</button>
                 <button className="btn-add" onClick={openAddEventModal}><Plus size={14} /> <span style={{ fontWeight: 800 }}>Tambah Event</span></button>
               </div>
             </div>
@@ -399,7 +516,7 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
                 <tr>
                   <th>Thumbnail</th>
                   <th>Judul Event</th>
-                  <th>Tanggal</th>
+                  <th>Tanggal • Waktu</th>
                   <th>Venue</th>
                   <th>Harga</th>
                   <th>Aksi</th>
@@ -413,7 +530,7 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
                       <div className="event-title">{e.title}</div>
                       <div className="event-id">{e.id}</div>
                     </td>
-                    <td>{e.date}</td>
+                    <td>{e.date}{e.time ? ' • ' + e.time : ''}</td>
                     <td>{e.venue}</td>
                     <td>{formatCurrency(e.price)}</td>
                     <td className="actions">
@@ -492,6 +609,60 @@ export default function DashboardSuperAdmin({ initialTab = 'users' }) {
           </div>
         </div>
       )}
+
+      {isEventModalOpen && (
+        <div className="modal-overlay" role="dialog" aria-modal="true" onMouseDown={closeEventModal}>
+          <div className="modal" onMouseDown={(e) => e.stopPropagation()}>
+            <form className="modal-form" onSubmit={handleSaveEvent}>
+              <h3>{editingEvent ? 'Edit Event' : 'Tambah Event'}</h3>
+
+              <label>
+                Judul Event
+                <input value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })} required />
+              </label>
+
+              <label>
+                Tanggal
+                <input type="date" value={eventForm.date} onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })} required />
+              </label>
+
+              <label>
+                Waktu
+                <input type="time" value={eventForm.time} onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })} />
+              </label>
+
+              <label>
+                Venue / Lokasi
+                <input value={eventForm.venue} onChange={(e) => setEventForm({ ...eventForm, venue: e.target.value })} required />
+              </label>
+
+              <label>
+                Harga (IDR)
+                <input type="number" value={eventForm.price} onChange={(e) => setEventForm({ ...eventForm, price: e.target.value })} required />
+              </label>
+
+              <label>
+                Kapasitas
+                <input type="number" value={eventForm.capacity || ''} onChange={(e) => setEventForm({ ...eventForm, capacity: e.target.value })} />
+              </label>
+
+              <label>
+                Upload Gambar (JPG/PNG)
+                <input type="file" accept="image/*" onChange={handleEventFileChange} />
+                {eventForm.img && (
+                  <div className="img-preview"><img src={eventForm.img} alt="preview" /></div>
+                )}
+              </label>
+
+              <div className="modal-actions">
+                <button type="button" className="btn-cancel" onClick={closeEventModal}>Batal</button>
+                <button type="submit" className="btn btn-primary">{editingEvent ? 'Simpan Perubahan' : 'Tambah Event'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

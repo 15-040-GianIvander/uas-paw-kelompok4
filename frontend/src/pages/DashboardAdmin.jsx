@@ -28,13 +28,13 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
   // Modal & form state for CRUD
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
-  const [form, setForm] = useState({ title: '', date: '', venue: '', price: '', img: '' });
+  const [form, setForm] = useState({ title: '', date: '', time: '', venue: '', price: '', img: '' });
   const [originalImg, setOriginalImg] = useState(null); // used to track pre-existing image during edit
 
   const openAddModal = () => {
     setEditingEvent(null);
     setOriginalImg(null);
-    setForm({ title: '', date: '', venue: '', price: '', img: '' });
+    setForm({ title: '', date: '', time: '', venue: '', price: '', img: '' });
     setIsModalOpen(true);
   };
 
@@ -43,7 +43,13 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
     if (!ev) return;
     setEditingEvent(id);
     setOriginalImg(ev.img || null);
-    setForm({ title: ev.title, date: ev.date, venue: ev.venue, price: String(ev.price), img: ev.img });
+    // attempt to parse time if date contains time part
+    let timeVal = '';
+    if (ev.date && ev.date.length > 10) {
+      if (ev.date.includes('T')) timeVal = ev.date.slice(ev.date.indexOf('T')+1, ev.date.indexOf('T')+6);
+      else timeVal = ev.date.slice(11,16);
+    }
+    setForm({ title: ev.title, date: ev.date && ev.date.length >= 10 ? ev.date.slice(0,10) : ev.date, time: timeVal, venue: ev.venue, price: String(ev.price), img: ev.img });
     setIsModalOpen(true);
   };
 
@@ -77,6 +83,7 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
     ev.preventDefault();
     if (!form.title.trim() || !form.date || !form.venue || !form.price) return alert('Lengkapi semua field.');
 
+    const storedDate = form.date && form.time ? `${form.date} ${form.time}` : form.date;
     if (editingEvent) {
       // if we replaced an existing blob URL image, revoke the old blob to avoid leaks
       setEvents((prev) => prev.map((e) => {
@@ -84,13 +91,13 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
         if (originalImg && originalImg.startsWith && originalImg.startsWith('blob:') && originalImg !== form.img) {
           try { URL.revokeObjectURL(originalImg); } catch (err) { /* ignore */ }
         }
-        return { ...e, title: form.title, date: form.date, venue: form.venue, price: Number(form.price), img: form.img };
+        return { ...e, title: form.title, date: storedDate, time: form.time, venue: form.venue, price: Number(form.price), img: form.img };
       }));
     } else {
       // generate next id like E-004
       const maxIndex = events.reduce((m, x) => Math.max(m, Number(x.id.split('-')[1] || 0)), 0);
       const nextId = 'E-' + String(maxIndex + 1).padStart(3, '0');
-      setEvents((prev) => [{ id: nextId, title: form.title, date: form.date, venue: form.venue, price: Number(form.price), img: form.img || '/assets/event-list/festival-musik.png' }, ...prev]);
+      setEvents((prev) => [{ id: nextId, title: form.title, date: storedDate, time: form.time, venue: form.venue, price: Number(form.price), img: form.img || '/assets/event-list/festival-musik.png' }, ...prev]);
     }
 
     setOriginalImg(null);
@@ -209,7 +216,7 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
                 <tr>
                   <th>Thumbnail</th>
                   <th>Judul Event</th>
-                  <th>Tanggal</th>
+                  <th>Tanggal • Waktu</th>
                   <th>Venue</th>
                   <th>Harga</th>
                   <th>Aksi</th>
@@ -223,7 +230,7 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
                       <div className="event-title">{e.title}</div>
                       <div className="event-id">{e.id}</div>
                     </td>
-                    <td>{e.date}</td>
+                    <td>{e.date}{e.time ? ' • ' + e.time : ''}</td>
                     <td>{e.venue}</td>
                     <td>{formatCurrency(e.price)}</td>
                     <td className="actions">
@@ -281,9 +288,14 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
                   <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
                 </label>
 
-                <label>
+                            <label>
                   Tanggal
                   <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} required />
+                </label>
+
+                <label>
+                  Waktu
+                  <input type="time" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} />
                 </label>
 
                 <label>

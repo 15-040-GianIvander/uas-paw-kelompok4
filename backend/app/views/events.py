@@ -61,8 +61,12 @@ def create_event(request):
     try:
         # 1. CEK AUTH & ROLE
         user_data, error = get_user_from_request(request)
-        if error: return {'message': error}
-        if user_data['role'] not in ['admin', 'superadmin']: return {'message': 'Forbidden'}
+        if error:
+            request.response.status = 401
+            return {'message': error}
+        if user_data['role'] not in ['admin', 'superadmin']:
+            request.response.status = 403
+            return {'message': 'Forbidden'}
 
         # 2. AMBIL DATA DARI FORM-DATA
         data = request.POST 
@@ -112,8 +116,12 @@ def create_event(request):
 def update_event(request):
     try:
         user_data, error = get_user_from_request(request)
-        if error: return {'message': error}
-        if user_data['role'] not in ['admin', 'superadmin']: return {'message': 'Forbidden'}
+        if error:
+            request.response.status = 401
+            return {'message': error}
+        if user_data['role'] not in ['admin', 'superadmin']:
+            request.response.status = 403
+            return {'message': 'Forbidden'}
 
         event_id = request.matchdict['id']
         event = request.dbsession.query(Event).get(event_id)
@@ -159,8 +167,12 @@ def update_event(request):
 def delete_event(request):
     try:
         user_data, error = get_user_from_request(request)
-        if error: return {'message': error}
-        if user_data['role'] not in ['admin', 'superadmin']: return {'message': 'Forbidden'}
+        if error:
+            request.response.status = 401
+            return {'message': error}
+        if user_data['role'] not in ['admin', 'superadmin']:
+            request.response.status = 403
+            return {'message': 'Forbidden'}
 
         event_id = request.matchdict['id']
         event = request.dbsession.query(Event).get(event_id)

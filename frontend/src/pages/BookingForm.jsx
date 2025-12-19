@@ -85,7 +85,7 @@ const BookingForm = () => {
     import('../lib/bookings').then(({ addBooking }) => {
       addBooking(newBooking);
       // navigate to payment page with booking id
-      navigate(`/payment/${bookingId}`, { state: { bookingId, qty, pricePer: event.price, total: grandTotal, eventTitle: event.title } });
+      navigate(`/payment/${bookingId}`, { state: { bookingId, qty, pricePer: pricePerTicket, total: grandTotal, eventTitle: event.title } });
     });
   };
 

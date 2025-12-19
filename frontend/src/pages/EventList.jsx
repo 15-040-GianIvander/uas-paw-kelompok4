@@ -13,6 +13,9 @@ const availableImages = Object.fromEntries(
 
 import { sampleEvents } from '../data/events';
 
+// (events now come from shared data module)
+
+
 // mapping for filenames that don't directly match slugs
 const filenameMap = {
     1: 'konser-indie.png',
@@ -25,6 +28,7 @@ const filenameMap = {
     8: 'yoga-pagi.png',
     9: 'hackaton-48h.png',
     10: 'food-festival.png',
+    // no images for new items yet; they will show placeholder
 };
 
 function slugify(title) {
@@ -37,60 +41,55 @@ function slugify(title) {
 }
 
 const EventList = () => {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
-
-  const filtered = sampleEvents.filter(
-    (e) =>
-      e.title.toLowerCase().includes(query.toLowerCase()) ||
-      e.venue.toLowerCase().includes(query.toLowerCase()) ||
-      e.tag.toLowerCase().includes(query.toLowerCase())
-  );
-
-  // Pagination: 16 per page (4 columns)
-  const itemsPerPage = 16;
   const [page, setPage] = useState(1);
-  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+  const itemsPerPage = 15;
 
+  // derived values
+  const filtered = events.filter((e) => {
+    const q = (query || '').trim().toLowerCase();
+    if (!q) return true;
+    return (
+      (e.title || '').toLowerCase().includes(q) ||
+      (e.location || '').toLowerCase().includes(q) ||
+      (e.tag || '').toLowerCase().includes(q)
+    );
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+  const paged = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+  // reset page when query changes
   useEffect(() => setPage(1), [query]);
 
-  // animation / observer
-  const containerRef = useRef(null);
-  const navigate = useNavigate();
-
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const cards = container.querySelectorAll('.event-card');
-    cards.forEach((c) => c.classList.remove('in-view'));
+    const fetchEvents = async () => {
+      try {
+        const res = await axios.get('/api/events');
+        setEvents(res.data);
+      } catch (err) {
+        console.error("Gagal ambil event:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in-view');
-            io.unobserve(entry.target);
-          }
-        });
-      },
-      { root: null, threshold: 0.12 }
+    fetchEvents();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-blue-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
     );
-
-    cards.forEach((c) => io.observe(c));
-    return () => io.disconnect();
-  }, [page, query]);
-
-  const start = (page - 1) * itemsPerPage;
-  const current = filtered.slice(start, start + itemsPerPage);
-
-  // chunk into rows of 4
-  const rows = [];
-  for (let i = 0; i < current.length; i += 4) rows.push(current.slice(i, i + 4));
-
-  const goPage = (n) => setPage(Math.min(Math.max(1, n), totalPages));
+  }
 
   return (
     <div className="events-page page-bg">
-      <section className="events-hero relative pt-72 pb-32 px-6 text-center overflow-hidden z-0" aria-label="Event hero">
+      <section className="events-hero relative pt-72 pb-32 px-6 text-center overflow-hidden" aria-label="Event hero">
         <div className="hero-inner" style={{ marginTop: '70px' }}>
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1 rounded-full text-blue-50 text-xs font-bold uppercase tracking-wider mb-4 shadow-lg">
               <Ticket size={14} /> Event List
@@ -102,9 +101,9 @@ const EventList = () => {
               Konser, workshop, festival & lainnya — semua di satu tempat.
             </p>
 
-            <div className="hero-controls">
+            <div className="hero-controls mt-6">
               <input
-                className="search-bar"
+                className="search-bar w-full max-w-md mx-auto p-3 rounded-full text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-xl"
                 placeholder="Cari event, venue, atau kategori"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -114,7 +113,9 @@ const EventList = () => {
       </section>
 
       <div style={{ padding: '32px 40px' }}>
-        <div style={{ marginBottom: 20 }}></div>
+        <div style={{ marginBottom: 20 }}>
+          {/* Header area intentionally left empty; hero contains title/search */}
+        </div>
 
         <div className="events-rows" ref={containerRef}>
           {rows.map((row, rowIdx) => (
@@ -126,9 +127,7 @@ const EventList = () => {
                     className="event-card"
                     key={evt.id}
                     data-idx={gIndex}
-                    style={{ ['--delay']: `${gIndex * 60}ms`, cursor: 'pointer' }}
-                    // Klik kartu -> Ke Event Detail
-                    onClick={() => navigate(`/events/${evt.id}`)}
+                    style={{ ['--delay']: `${gIndex * 60}ms` }}
                   >
                     <div className="event-thumb">
                       {(() => {
@@ -153,34 +152,31 @@ const EventList = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
                         <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{evt.tag}</div>
                         <div style={{ display: 'flex', gap: 8 }}>
-                          {/* UPDATE: Tombol ini sekarang juga ke Event Detail (bukan booking langsung) */}
-                          <button 
-                            className="btn btn-primary" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/events/${evt.id}`); // <-- Diubah ke /events/ID
-                            }}
-                          >
-                            Beli Tiket
-                          </button>
+                          <button className="btn btn-primary" onClick={() => navigate(`/booking/${evt.id}`)}>Beli Tiket</button>
                         </div>
                       </div>
                     </div>
                   </div>
-                );
-              })}
+                </Link>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Pagination */}
-        <div className="pagination" style={{ marginTop: 28, display: 'flex', justifyContent: 'center', gap: 8 }}>
-          <button className="btn" onClick={() => goPage(page - 1)} disabled={page === 1}>Prev</button>
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <button key={i} className={`btn ${page === i + 1 ? 'btn-primary' : ''}`} onClick={() => goPage(i + 1)}>{i + 1}</button>
-          ))}
-          <button className="btn" onClick={() => goPage(page + 1)} disabled={page === totalPages}>Next</button>
-        </div>
+            {totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-3">
+                <button className="px-4 py-2 bg-white border rounded-lg hover:bg-slate-50 disabled:opacity-50" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>Prev</button>
+                <div className="text-sm text-slate-600">Halaman {page} / {totalPages}</div>
+                <button className="px-4 py-2 bg-white border rounded-lg hover:bg-slate-50 disabled:opacity-50" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Next</button>
+              </div>
+            )}
+
+          </> /* ✅ FIX: Tambahkan Fragment Penutup Disini */
+        ) : (
+          <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
+            <Ticket size={48} className="mx-auto text-slate-300 mb-4" />
+            <h3 className="text-lg font-medium text-slate-900">Belum ada event tersedia</h3>
+            <p className="text-slate-500">Coba refresh halaman atau cek kembali nanti.</p>
+          </div>
+        )}
       </div>
     </div>
   );

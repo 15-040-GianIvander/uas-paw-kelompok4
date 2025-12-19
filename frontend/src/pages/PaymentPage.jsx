@@ -12,6 +12,7 @@ export default function PaymentPage() {
   const { state } = useLocation();
 
   const [booking, setBooking] = React.useState(null);
+  const [paymentInfo, setPaymentInfo] = React.useState(state?.paymentInfo || null);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -24,6 +25,7 @@ export default function PaymentPage() {
     // if arrived with state (newly created booking), reflect it
     if (state && state.bookingId && state.bookingId === bookingId) {
       setBooking({ id: bookingId, eventName: state.eventTitle, qty: state.qty, total: state.total, pricePer: state.pricePer, date: state.date, time: state.time, location: state.location });
+      if (state.paymentInfo) setPaymentInfo(state.paymentInfo);
     }
     return () => { cancelled = true; };
   }, [bookingId, state]);
@@ -39,7 +41,7 @@ export default function PaymentPage() {
     import('../lib/bookings').then(({ updateBooking }) => {
       const patch = { status: 'Confirmed', paidAt: new Date().toISOString(), paidMethod: method };
       updateBooking(bookingId, patch);
-      navigate('/my-bookings');
+      navigate('/booking-history');
     });
   };
 
@@ -49,7 +51,7 @@ export default function PaymentPage() {
       updateBooking(bookingId, { status: 'Pending' });
       setTimeout(() => {
         updateBooking(bookingId, { status: 'Confirmed', paidAt: new Date().toISOString(), paidMethod: 'qris' });
-        navigate('/my-bookings');
+        navigate('/booking-history');
       }, 1200);
     });
   };
@@ -58,7 +60,7 @@ export default function PaymentPage() {
     // set booking to pending (pay later) and return to bookings list
     import('../lib/bookings').then(({ updateBooking }) => {
       updateBooking(bookingId, { status: 'Pending' });
-      navigate('/my-bookings');
+      navigate('/booking-history');
     });
   };
 
@@ -67,7 +69,7 @@ export default function PaymentPage() {
     if (!window.confirm('Batalkan booking ini? Tindakan tidak dapat dibatalkan.')) return;
     import('../lib/bookings').then(({ updateBooking }) => {
       updateBooking(bookingId, { status: 'Cancelled', cancelledAt: new Date().toISOString() });
-      navigate('/my-bookings');
+      navigate('/booking-history');
     });
   };
 
@@ -78,15 +80,24 @@ export default function PaymentPage() {
         <p className="text-sm text-slate-600 mb-4">Pembayaran dilakukan melalui QRIS. Scan kode di bawah menggunakan aplikasi dompet digital Anda.</p>
 
         <div className="bg-slate-50 p-4 rounded-xl flex items-center justify-center mb-4">
-          <img src={shareqr} alt="QRIS" className="w-64 h-64 object-contain" />
+          {paymentInfo && paymentInfo.method === 'qris' && paymentInfo.details ? (
+            <img src={paymentInfo.details} alt="QRIS" className="w-64 h-64 object-contain" />
+          ) : paymentInfo && paymentInfo.method && paymentInfo.details ? (
+            <div className="text-left p-4">
+              <div className="text-sm text-slate-500">Payment Method: <span className="font-medium text-slate-800">{paymentInfo.method}</span></div>
+              <div className="mt-2 font-mono text-sm text-slate-700">{paymentInfo.details}</div>
+            </div>
+          ) : (
+            <img src={shareqr} alt="QRIS" className="w-64 h-64 object-contain" />
+          )}
         </div>
 
-        {total !== null ? (
+        { (paymentInfo?.total_price ?? total) !== null ? (
           <div className="mb-4 text-left">
             <div className="text-sm text-slate-500">Acara: <span className="font-medium text-slate-800">{eventTitle}</span></div>
             <div className="text-sm text-slate-500">Jumlah tiket: <span className="font-medium">{qty}</span></div>
             <div className="text-sm text-slate-500">Harga per tiket: <span className="font-medium">{formatCurrency(pricePer)}</span></div>
-            <div className="mt-2 text-lg font-bold text-blue-600">Total: {formatCurrency(total)}</div>
+            <div className="mt-2 text-lg font-bold text-blue-600">Total: {formatCurrency(paymentInfo?.total_price ?? total)}</div>
           </div>
         ) : (
           <div className="mb-4 text-sm text-slate-500">Total pembelian tidak tersedia. Kembali ke halaman pemesanan jika perlu.</div>

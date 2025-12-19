@@ -16,8 +16,12 @@ def check_superadmin(request):
 def get_all_users(request):
     try:
         user_data, error = check_superadmin(request)
-        if error: 
-            request.response.status = 403
+        if error:
+            # Distinguish between auth error (401) and insufficient role (403)
+            if 'Missing' in str(error) or 'Invalid' in str(error):
+                request.response.status = 401
+            else:
+                request.response.status = 403
             return {'message': error}
 
         users = request.dbsession.query(User).order_by(User.role.asc(), User.name.asc()).all()
@@ -39,8 +43,11 @@ def get_all_users(request):
 def create_user_by_superadmin(request):
     try:
         _, error = check_superadmin(request)
-        if error: 
-            request.response.status = 403
+        if error:
+            if 'Missing' in str(error) or 'Invalid' in str(error):
+                request.response.status = 401
+            else:
+                request.response.status = 403
             return {'message': error}
 
         data = request.json_body
@@ -77,8 +84,11 @@ def update_user_role(request):
     try:
         # Cek Superadmin
         _, error = check_superadmin(request)
-        if error: 
-            request.response.status = 403
+        if error:
+            if 'Missing' in str(error) or 'Invalid' in str(error):
+                request.response.status = 401
+            else:
+                request.response.status = 403
             return {'message': error}
 
         target_id = request.matchdict['id']
