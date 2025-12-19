@@ -10,6 +10,7 @@ const BookingForm = () => {
   // State untuk form
   const [qty, setQty] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState('qris'); // qris, bank, ewallet
+  const [fullname, setFullname] = useState('');
 
   // Lookup event by :id from shared data
   const event = sampleEvents.find((e) => String(e.id) === String(id)) || {
@@ -66,19 +67,26 @@ const BookingForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate creating a booking and redirecting to payment
-    const bookingId = 'B-' + Date.now();
-    // Package booking info to pass to payment page (in a real app this would come from server)
-    const bookingState = {
-      bookingId,
+    // Create booking and persist to localStorage via bookings lib
+    const bookingId = 'INV-' + Date.now();
+    const newBooking = {
+      id: bookingId,
+      eventName: event.title,
+      date: event.date,
+      time: event.time,
+      location: event.location,
+      status: 'Pending',
       qty,
-      pricePer: event.price,
       total: grandTotal,
-      eventTitle: event.title,
+      buyer: fullname || 'Nama Pemesan',
     };
 
-    // In real app: POST to API to create booking and get bookingId back
-    navigate(`/payment/${bookingId}`, { state: bookingState });
+    // add to storage
+    import('../lib/bookings').then(({ addBooking }) => {
+      addBooking(newBooking);
+      // navigate to payment page with booking id
+      navigate(`/payment/${bookingId}`, { state: { bookingId, qty, pricePer: event.price, total: grandTotal, eventTitle: event.title } });
+    });
   };
 
   return (
@@ -111,7 +119,7 @@ const BookingForm = () => {
                             <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Nama Lengkap</label>
                             <div className="relative">
                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                <input type="text" placeholder="Masukkan nama sesuai KTP" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" required />
+                                <input type="text" placeholder="Masukkan nama sesuai KTP" value={fullname} onChange={(e) => setFullname(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" required />
                             </div>
                         </div>
 
