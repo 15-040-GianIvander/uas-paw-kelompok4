@@ -17,14 +17,32 @@ export default function PaymentPage() {
   React.useEffect(() => {
     let cancelled = false;
     // try to get booking from storage
-    import('../lib/bookings').then(({ getBookingById }) => {
+    import('../lib/bookings').then(({ getBookingById, addBooking }) => {
       const b = getBookingById(bookingId);
       if (!cancelled) setBooking(b || null);
+
+      // if booking wasn't saved locally but we arrived here with state (server-created booking), persist it
+      if (!b && state && state.bookingId && state.bookingId === bookingId) {
+        const toSave = {
+          id: bookingId,
+          eventName: state.eventTitle,
+          date: state.date,
+          time: state.time,
+          location: state.location,
+          status: state.paymentInfo?.status === 'paid' ? 'Confirmed' : 'Pending',
+          qty: state.qty ?? 1,
+          pricePer: state.pricePer ?? state.total ?? 0,
+          total: state.total ?? 0,
+          buyer: state.buyerName || 'Nama Pemesan',
+        };
+        try { addBooking(toSave); } catch(e) { /* ignore */ }
+        if (!cancelled) setBooking(toSave);
+      }
     });
 
-    // if arrived with state (newly created booking), reflect it
+    // if arrived with state (newly created booking), reflect it in UI
     if (state && state.bookingId && state.bookingId === bookingId) {
-      setBooking({ id: bookingId, eventName: state.eventTitle, qty: state.qty, total: state.total, pricePer: state.pricePer, date: state.date, time: state.time, location: state.location });
+      setBooking(prev => prev || { id: bookingId, eventName: state.eventTitle, qty: state.qty, total: state.total, pricePer: state.pricePer, date: state.date, time: state.time, location: state.location });
       if (state.paymentInfo) setPaymentInfo(state.paymentInfo);
     }
     return () => { cancelled = true; };

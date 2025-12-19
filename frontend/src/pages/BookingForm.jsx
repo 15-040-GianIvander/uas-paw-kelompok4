@@ -69,6 +69,7 @@ const BookingForm = () => {
     e.preventDefault();
     // Create booking and persist to localStorage via bookings lib
     const bookingId = 'INV-' + Date.now();
+    const pricePerTicket = event.price;
     const newBooking = {
       id: bookingId,
       eventName: event.title,
@@ -77,14 +78,14 @@ const BookingForm = () => {
       location: event.location,
       status: 'Pending',
       qty,
+      pricePer: pricePerTicket,
       total: grandTotal,
       buyer: fullname || 'Nama Pemesan',
     };
 
-    // add to storage
+    // add to storage and navigate to payment page
     import('../lib/bookings').then(({ addBooking }) => {
       addBooking(newBooking);
-      // navigate to payment page with booking id
       navigate(`/payment/${bookingId}`, { state: { bookingId, qty, pricePer: pricePerTicket, total: grandTotal, eventTitle: event.title } });
     });
   };
