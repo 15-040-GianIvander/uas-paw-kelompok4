@@ -9,9 +9,9 @@ const dummyEvents = [
 ];
 
 const dummyBookings = [
-  { id: 'B-1001', user: 'Ayu Pratiwi', eventName: 'Konser Indie Jakarta', orderDate: '2025-11-01', status: 'Paid' },
-  { id: 'B-1002', user: 'Rian Saputra', eventName: 'Festival Musik Selatan', orderDate: '2025-11-18', status: 'Pending' },
-  { id: 'B-1003', user: 'Dewi Lestari', eventName: 'Acoustic Night', orderDate: '2025-12-02', status: 'Paid' },
+  { id: 'B-1001', userId: '1001', user: 'Ayu Pratiwi', eventName: 'Konser Indie Jakarta', orderDate: '2025-11-01', status: 'Paid' },
+  { id: 'B-1002', userId: '1002', user: 'Rian Saputra', eventName: 'Festival Musik Selatan', orderDate: '2025-11-18', status: 'Pending' },
+  { id: 'B-1003', userId: '1003', user: 'Dewi Lestari', eventName: 'Acoustic Night', orderDate: '2025-12-02', status: 'Paid' },
 ];
 
 function formatCurrency(v) {
@@ -22,6 +22,7 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [events, setEvents] = useState(dummyEvents);
   const [bookings] = useState(dummyBookings);
+  const [search, setSearch] = useState('');
 
   // Modal & form state for CRUD
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -104,6 +105,17 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
     };
   }, [events, bookings]);
 
+  const filteredBookings = useMemo(() => {
+    const q = (search || '').trim().toLowerCase();
+    if (!q) return bookings;
+    return bookings.filter((b) => {
+      return b.id.toLowerCase().includes(q) ||
+             (b.user && b.user.toLowerCase().includes(q)) ||
+             (b.eventName && b.eventName.toLowerCase().includes(q)) ||
+             (b.userId && b.userId.includes(q));
+    });
+  }, [bookings, search]);
+
   const handleEditEvent = (id) => openEditModal(id);
   const handleDeleteEvent = (id) => {
     if (!confirm('Hapus event ini?')) return;
@@ -124,7 +136,7 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
   };
 
   return (
-    <div className={`admin-page ${activeTab === 'events' ? 'page-bg min-h-screen' : ''}`}>
+    <div className={`admin-page page-bg min-h-screen`}>
       <aside className="admin-sidebar">
         <div className="brand">
           <div className="logo">E</div>
@@ -223,10 +235,15 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
 
         {activeTab === 'bookings' && (
           <section className="panel">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari Booking, Nama user, atau ID (4 digit)..." className="input input-search w-full max-w-md" />
+              <div className="text-sm text-slate-500">Menampilkan {filteredBookings.length} / {bookings.length}</div>
+            </div>
             <table className="table">
               <thead>
                 <tr>
                   <th>Booking ID</th>
+                  <th>User ID</th>
                   <th>User</th>
                   <th>Event</th>
                   <th>Order Date</th>
@@ -234,9 +251,10 @@ export default function DashboardAdmin({ initialTab = 'events' }) {
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((b) => (
+                {filteredBookings.map((b) => (
                   <tr key={b.id}>
                     <td>{b.id}</td>
+                    <td className="font-mono">{b.userId || '—'}</td>
                     <td>{b.user}</td>
                     <td>{b.eventName}</td>
                     <td>{b.orderDate}</td>
