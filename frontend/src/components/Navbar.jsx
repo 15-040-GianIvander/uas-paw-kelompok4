@@ -15,7 +15,7 @@ const Navbar = () => {
   // derive auth state from localStorage
   const isLoggedIn = Boolean(localStorage.getItem('token'));
 
-  // Efek scroll biar navbar makin solid pas discroll
+  // Efek scroll
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 20) {
@@ -42,13 +42,14 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  // Helper untuk mengecek menu aktif
   const isActive = (path) => location.pathname === path ? "text-blue-600 font-bold" : "text-gray-500 hover:text-blue-600";
 
   return (
     <>
-      {/* Container Utama Navbar (Floating) */}
-      <div className="no-print fixed top-0 left-0 right-0 z-50 flex justify-center pt-6 px-4 pointer-events-none">
+      {/* FIX 1: z-[9999] agar navbar SELALU di atas elemen apapun (termasuk Search Bar).
+         FIX 2: pointer-events-none di container luar agar area kosong di kiri-kanan navbar tidak menghalangi klik ke halaman.
+      */}
+      <div className="no-print fixed top-0 left-0 right-0 z-[9999] flex justify-center pt-6 px-4 pointer-events-none">
         
         {/* Kapsul Navbar */}
         <nav className={`pointer-events-auto w-full max-w-6xl transition-all duration-300 ease-in-out border border-white/40
@@ -100,10 +101,11 @@ const Navbar = () => {
         </nav>
       </div>
 
-      {/* Mobile Menu Dropdown (Floating Box Terpisah) */}
+      {/* Mobile Menu Dropdown */}
+      {/* FIX 3: z-[9998] agar dropdown juga sangat tinggi (sedikit di bawah navbar utama) */}
       {isOpen && (
-        <div className="fixed top-24 left-4 right-4 z-40 md:hidden animate-in fade-in slide-in-from-top-5 duration-300">
-          <div className="bg-white/90 backdrop-blur-xl border border-white/50 rounded-3xl shadow-2xl p-4 flex flex-col gap-2">
+        <div className="fixed top-24 left-4 right-4 z-[9998] md:hidden animate-in fade-in slide-in-from-top-5 duration-300">
+          <div className="bg-white/95 backdrop-blur-xl border border-white/50 rounded-3xl shadow-2xl p-4 flex flex-col gap-2 ring-1 ring-black/5">
             <Link to="/" onClick={() => setIsOpen(false)} className={`block px-4 py-3 rounded-xl font-medium ${location.pathname === '/' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}>Home</Link>
             <Link to="/events" onClick={() => setIsOpen(false)} className={`block px-4 py-3 rounded-xl font-medium ${location.pathname === '/events' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}>Events</Link>
             

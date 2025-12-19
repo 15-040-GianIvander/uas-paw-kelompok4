@@ -55,85 +55,8 @@ Aplikasi ini memungkinkan pengguna untuk berperan sebagai **Organizer** (Penyele
 
 ## 📄 API Documentation
 
-Dokumentasi API berikut menjelaskan endpoint utama yang digunakan dalam aplikasi Event Ticketing System. Seluruh API berbasis REST dan menggunakan format data JSON.
+Dokumentasi API backend dapat diakses melalui file [API.md](API.md).
 
-### Auth - Login
-Digunakan untuk proses autentikasi user.
-* **Endpoint:** /api/login
-* **Method:** POST
-* **Request Body:**
-```bash
-{
-   "email": "user@mail.com",
-   "password": "password"
-}
-```
-* **Response Success:**
-```bash
-{
-   "token": "jwt-token",
-   "user" : {
-   "id": 1,
-   "name": "User"
- }
-}
-```
-
-### Auth - Register
-Digunakan untuk mendaftarkan user baru.
-* **Endpoint:** /api/register
-* **Method:** POST
-* **Request Body:**
-```bash
-{
-  "name": "User",
-  "email": "user@mail.com",
-  "password": "password"
-}
-```
-
-### Event - Get All Events
-Digunakan untuk mengambil seluruh data event yang tersedia.
-* **Endpoint:** /api/events
-* **Method:** GET
-* **Respons:**
-```bash
-[
- {
-   "id": 1,
-   "title": "Music Festival",
-   "date": "2025-01-01",
-   "price": 50000
- }
-]
-```
-
-### Event - Create Event
-Digunakan oleh admin untuk menambahkan event baru.
-* **Endpoint:** /api/events
-* **Method:** POST
-* **Authorization:** Bearer Token
-*  **Request Body:**
-```bash
-{
-  "title": "Music Festival",
-  "date": "2025-01-01",
-  "price": 50000
-}
-```
-
-### Booking - Pesan Tiker
-Digunakan oleh user untuk melakukan pemesanan tiket event.
-* **Endpoint:** /api/bookings
-* **Method:** POST
-* **Authorization:** Bearer Token
-* **Request Body:**
-```bash
-{
-  "event_id": 1,
-  "quantity": 2
-}
-```
 ---
 
 ## 🧪 Testing API
@@ -169,6 +92,23 @@ Aplikasi ini menggunakan 3 tabel utama yang saling berelasi:
 3.  **Bookings:** Menyimpan transaksi tiket antara Attendee dan Event.
 
 ![WhatsApp Image 2025-12-11 at 16 32 24](https://github.com/user-attachments/assets/2ebfb44a-32fe-4932-815e-8b9c29153b17)
+---
+
+## 📦 Deployment Aplikasi
+
+Aplikasi Event Ticketing System telah dideploy sehingga dapat diakses secara online tanpa perlu menjalankan aplikasi secara lokal. Proses deployment dilakukan dengan memisahkan frontend dan backend agar lebih fleksibel dan scalable.
+
+### 🔧 Backend Deployment
+
+Backend telah dideploy dan berfungsi sebagai penyedia REST API yang digunakan oleh frontend, berikut link backend deployment yang bisa diakses.
+[Link backend]
+
+### 🌐 Frontend Deployment
+
+Frontend aplikasi dideploy menggunakan Vercel, berikut link frontend deployment yang bisa diakses.
+
+[📌Frontend](https://uas-paw-kelompok4.vercel.app/)
+
 ---
 
 ## 🚀 Cara Instalasi & Menjalankan (Local Development)
