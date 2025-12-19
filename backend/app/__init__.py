@@ -70,7 +70,21 @@ def main(global_config, **settings):
         # PUT (Update Role) & DELETE (Hapus)
         config.add_route('manage_user_detail', '/api/superadmin/users/{id}')
         # ------------------------
-        
-        config.scan('.views')
+    def add_cors_headers_response_callback(event):
+        def cors_headers(request, response):
+            response.headers.update({
+            'Access-Control-Allow-Origin': '*',  # Boleh diakses dari mana saja (termasuk Vercel)
+            'Access-Control-Allow-Methods': 'POST,GET,DELETE,PUT,OPTIONS',
+            'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization',
+            'Access-Control-Allow-Credentials': 'true',
+            'Access-Control-Max-Age': '1728000',
+            })
+        event.request.add_response_callback(cors_headers)
+
+    from pyramid.events import NewRequest
+    config.add_subscriber(add_cors_headers_response_callback, NewRequest)
+    # --- BATAS KODE CORS ---
+
+    config.scan('.views')
         
     return config.make_wsgi_app()

@@ -168,36 +168,6 @@ const BookingForm = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* Section 3: Metode Pembayaran */}
-                <div className="bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-blue-900/5 border border-white/50">
-                     <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-6">
-                        <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><CreditCard size={20}/></div>
-                        Metode Pembayaran
-                    </h3>
-
-                    <div className="space-y-3">
-                        {/* Option 1: QRIS */}
-                        <label className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'qris' ? 'border-blue-500 bg-blue-50/50 ring-1 ring-blue-500' : 'border-slate-100 hover:border-slate-300'}`}>
-                            <input type="radio" name="payment" value="qris" checked={paymentMethod === 'qris'} onChange={() => setPaymentMethod('qris')} className="w-5 h-5 text-blue-600 focus:ring-blue-500" />
-                            <div className="flex-1">
-                                <p className="font-bold text-slate-800">QRIS (Gopay, OVO, Dana)</p>
-                                <p className="text-xs text-slate-500">Scan & Bayar instan.</p>
-                            </div>
-                            <div className="bg-white px-2 py-1 rounded border border-slate-200 text-[10px] font-bold text-slate-600">AUTO</div>
-                        </label>
-
-                        {/* Option 2: Virtual Account */}
-                        <label className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'bank' ? 'border-blue-500 bg-blue-50/50 ring-1 ring-blue-500' : 'border-slate-100 hover:border-slate-300'}`}>
-                            <input type="radio" name="payment" value="bank" checked={paymentMethod === 'bank'} onChange={() => setPaymentMethod('bank')} className="w-5 h-5 text-blue-600 focus:ring-blue-500" />
-                            <div className="flex-1">
-                                <p className="font-bold text-slate-800">Virtual Account Bank</p>
-                                <p className="text-xs text-slate-500">BCA, Mandiri, BNI, BRI</p>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
             </div>
 
             {/* --- KOLOM KANAN: ORDER SUMMARY (STICKY) --- */}
