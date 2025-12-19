@@ -11,7 +11,7 @@ API menggunakan arsitektur **RESTful**, format data **JSON**, serta autentikasi 
 ### Local Development
 
 ```
-http://localhost:6543/api
+http://https://alimukti.pythonanywhere.com/api
 ```
 
 ### Production

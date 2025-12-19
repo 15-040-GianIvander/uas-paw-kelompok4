@@ -32,7 +32,7 @@ def main(global_config, **settings):
         config.registry.dbmaker = sessionmaker(bind=engine)
         config.add_request_method(get_db, 'dbsession', reify=True)
 
-        # Ini agar gambar bisa diakses via URL: http://localhost:6543/static/uploads/namafile.jpg
+        # Ini agar gambar bisa diakses via URL: http://https://alimukti.pythonanywhere.com/static/uploads/namafile.jpg
         config.add_static_view(name='static', path='app:static')
 
         # --- ROUTE PROFILE (BARU) ---
