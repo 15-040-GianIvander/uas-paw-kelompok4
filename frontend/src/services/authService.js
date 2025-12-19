@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '' });
+const api = axios.create({ baseURL: 'https://alimukti.pythonanywhere.com/api' });
 
 async function register({ name, email, password }) {
   try {
-    const res = await api.post('/api/register', { name, email, password });
+    const res = await api.post('/register', { name, email, password });
     return res.data;
   } catch (err) {
     // normalize error
@@ -14,7 +14,7 @@ async function register({ name, email, password }) {
 
 async function login({ email, password }) {
   try {
-    const res = await api.post('/api/login', { email, password });
+    const res = await api.post('/login', { email, password });
     return res.data; // { token, role, user_id }
   } catch (err) {
     throw err?.response?.data || { message: err.message || 'Login failed' };
@@ -23,7 +23,7 @@ async function login({ email, password }) {
 
 async function logout() {
   try {
-    const res = await api.post('/api/logout');
+    const res = await api.post('/logout');
     // clear client-side storage regardless
     localStorage.removeItem('token');
     localStorage.removeItem('user_role');
@@ -40,7 +40,7 @@ async function logout() {
 
 async function forgotPassword({ email }) {
   try {
-    const res = await api.post('/api/forgot-password', { email });
+    const res = await api.post('/forgot-password', { email });
     return res.data;
   } catch (err) {
     throw err?.response?.data || { message: err.message || 'Forgot password failed' };
@@ -49,7 +49,7 @@ async function forgotPassword({ email }) {
 
 async function resetPassword({ email, token, new_password }) {
   try {
-    const res = await api.post('/api/reset-password', { email, token, new_password });
+    const res = await api.post('/reset-password', { email, token, new_password });
     return res.data;
   } catch (err) {
     throw err?.response?.data || { message: err.message || 'Reset password failed' };

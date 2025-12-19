@@ -70,14 +70,18 @@ def main(global_config, **settings):
         # PUT (Update Role) & DELETE (Hapus)
         config.add_route('manage_user_detail', '/api/superadmin/users/{id}')
         # ------------------------
+        # CORS preflight catch-all for /api/* (handles OPTIONS preflight requests)
+        config.add_route('cors_preflight', '/api/{path:.*}')
     def add_cors_headers_response_callback(event):
         def cors_headers(request, response):
+            # Echo Origin so that credentialed requests are accepted by browsers
+            origin = request.headers.get('Origin') or '*'
             response.headers.update({
-            'Access-Control-Allow-Origin': '*',  # Boleh diakses dari mana saja (termasuk Vercel)
-            'Access-Control-Allow-Methods': 'POST,GET,DELETE,PUT,OPTIONS',
-            'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization',
-            'Access-Control-Allow-Credentials': 'true',
-            'Access-Control-Max-Age': '1728000',
+                'Access-Control-Allow-Origin': origin,
+                'Access-Control-Allow-Methods': 'POST,GET,DELETE,PUT,OPTIONS',
+                'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization',
+                'Access-Control-Allow-Credentials': 'true',
+                'Access-Control-Max-Age': '1728000',
             })
         event.request.add_response_callback(cors_headers)
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '' });
+const api = axios.create({ baseURL: 'https://alimukti.pythonanywhere.com/api' });
 
 function getAuthHeader() {
   const token = localStorage.getItem('token');
@@ -9,7 +9,7 @@ function getAuthHeader() {
 
 export async function getEvents() {
   try {
-    const res = await api.get('/api/events');
+    const res = await api.get('/events');
     return res.data;
   } catch (err) {
     throw err;
@@ -18,7 +18,7 @@ export async function getEvents() {
 
 export async function getEventById(id) {
   try {
-    const res = await api.get(`/api/events/${id}`);
+    const res = await api.get(`/events/${id}`);
     return res.data;
   } catch (err) {
     throw err;
@@ -28,7 +28,7 @@ export async function getEventById(id) {
 export async function createEvent(formData) {
   try {
     // Let axios set Content-Type and boundary automatically for FormData
-    const res = await api.post('/api/events', formData, { headers: getAuthHeader() });
+    const res = await api.post('/events', formData, { headers: getAuthHeader() });
     return res.data;
   } catch (err) {
     throw err?.response?.data || { message: err.message || 'Failed to create event' };
@@ -37,7 +37,7 @@ export async function createEvent(formData) {
 
 export async function updateEvent(id, formData) {
   try {
-    const res = await api.put(`/api/events/${id}`, formData, { headers: getAuthHeader() });
+    const res = await api.put(`/events/${id}`, formData, { headers: getAuthHeader() });
     return res.data;
   } catch (err) {
     throw err?.response?.data || { message: err.message || 'Failed to update event' };
@@ -46,7 +46,7 @@ export async function updateEvent(id, formData) {
 
 export async function deleteEvent(id) {
   try {
-    const res = await api.delete(`/api/events/${id}`, { headers: getAuthHeader() });
+    const res = await api.delete(`/events/${id}`, { headers: getAuthHeader() });
     return res.data;
   } catch (err) {
     throw err;
