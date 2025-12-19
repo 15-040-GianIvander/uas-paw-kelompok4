@@ -22,7 +22,7 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # --- FORGOT PASSWORD ---
-    reset_token = Column(String, nullable=True)        # Menyimpan kode unik
+    reset_token = Column(String, nullable=True)        # Menyimpan kode unik   
     reset_token_expiry = Column(DateTime, nullable=True) # Menyimpan waktu expired
     # --------------------------------------
 
@@ -40,6 +40,9 @@ class Event(Base):
     capacity = Column(Integer, nullable=False)
     ticket_price = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    # --- TAMBAHAN UNTUK UPLOAD GAMBAR EVENT ---
+    image_filename = Column(String, nullable=True) 
+    # ----------------------------------
     
     organizer = relationship("User", back_populates="events")
     bookings = relationship("Booking", back_populates="event")

@@ -1,8 +1,8 @@
-"""Final Fresh Migration
+"""Add image filename to events
 
-Revision ID: 77ab3cee36e9
+Revision ID: fbd3efcd0d8d
 Revises: 
-Create Date: 2025-12-19 07:36:21.952684
+Create Date: 2025-12-19 08:06:28.593618
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '77ab3cee36e9'
+revision: str = 'fbd3efcd0d8d'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -43,6 +43,7 @@ def upgrade() -> None:
     sa.Column('capacity', sa.Integer(), nullable=False),
     sa.Column('ticket_price', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('image_filename', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['organizer_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
