@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const HIDE_ON = ['/login', '/register', '/admin/dashboard', '/404', '/organizer/events', '/forgot-password', '/notifications'];
+const HIDE_ON = ['/login', '/register', '/admin/dashboard', '/super-admin/dashboard', '/404', '/organizer/events', '/forgot-password', '/notifications'];
 
 export default function Footer() {
   const location = useLocation();
