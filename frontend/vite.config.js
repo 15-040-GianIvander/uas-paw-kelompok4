@@ -9,7 +9,7 @@ export default defineConfig({
       // Ini kuncinya: Semua request yang berawalan '/api'
       // akan diteruskan ke Backend di port 6543
       '/api': {
-        target: 'http://localhost:6543', // Sesuai development.ini backend kamu
+        target: 'http://https://alimukti.pythonanywhere.com', // Sesuai development.ini backend kamu
         changeOrigin: true,
         secure: false,
       }
