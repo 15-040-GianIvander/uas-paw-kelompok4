@@ -13,9 +13,6 @@ const availableImages = Object.fromEntries(
 
 import { sampleEvents } from '../data/events';
 
-// (events now come from shared data module)
-
-
 // mapping for filenames that don't directly match slugs
 const filenameMap = {
     1: 'konser-indie.png',
@@ -28,7 +25,6 @@ const filenameMap = {
     8: 'yoga-pagi.png',
     9: 'hackaton-48h.png',
     10: 'food-festival.png',
-    // no images for new items yet; they will show placeholder
 };
 
 function slugify(title) {
@@ -94,7 +90,7 @@ const EventList = () => {
 
   return (
     <div className="events-page page-bg">
-      <section className="events-hero relative pt-72 pb-32 px-6 text-center overflow-hidden" aria-label="Event hero">
+      <section className="events-hero relative pt-72 pb-32 px-6 text-center overflow-hidden z-0" aria-label="Event hero">
         <div className="hero-inner" style={{ marginTop: '70px' }}>
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1 rounded-full text-blue-50 text-xs font-bold uppercase tracking-wider mb-4 shadow-lg">
               <Ticket size={14} /> Event List
@@ -118,9 +114,7 @@ const EventList = () => {
       </section>
 
       <div style={{ padding: '32px 40px' }}>
-        <div style={{ marginBottom: 20 }}>
-          {/* Header area intentionally left empty; hero contains title/search */}
-        </div>
+        <div style={{ marginBottom: 20 }}></div>
 
         <div className="events-rows" ref={containerRef}>
           {rows.map((row, rowIdx) => (
@@ -132,7 +126,9 @@ const EventList = () => {
                     className="event-card"
                     key={evt.id}
                     data-idx={gIndex}
-                    style={{ ['--delay']: `${gIndex * 60}ms` }}
+                    style={{ ['--delay']: `${gIndex * 60}ms`, cursor: 'pointer' }}
+                    // Klik kartu -> Ke Event Detail
+                    onClick={() => navigate(`/events/${evt.id}`)}
                   >
                     <div className="event-thumb">
                       {(() => {
@@ -157,7 +153,16 @@ const EventList = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
                         <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{evt.tag}</div>
                         <div style={{ display: 'flex', gap: 8 }}>
-                          <button className="btn btn-primary" onClick={() => navigate(`/booking/${evt.id}`)}>Beli Tiket</button>
+                          {/* UPDATE: Tombol ini sekarang juga ke Event Detail (bukan booking langsung) */}
+                          <button 
+                            className="btn btn-primary" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/events/${evt.id}`); // <-- Diubah ke /events/ID
+                            }}
+                          >
+                            Beli Tiket
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -181,4 +186,4 @@ const EventList = () => {
   );
 };
 
-export default EventList; 
+export default EventList;
