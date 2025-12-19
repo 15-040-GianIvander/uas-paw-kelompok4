@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Phone, Clock } from 'lucide-react';
+import { Mail, Phone, Clock, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './HelpCenter.css';
 
@@ -7,11 +7,11 @@ const HelpCenter = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="page-bg">
+    <div className="page-bg min-h-screen pt-32 pb-20 px-4">
       <div className="help-container">
         <div className="help-card">
           <div className="help-header">
-            <button className="help-back" onClick={() => navigate(-1)}>Kembali</button>
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-slate-400 hover:text-blue-600 transition mb-4 text-sm font-medium"><ChevronLeft size={16}/> Kembali</button>
             <div>
               <h2>Bantuan &amp; Dukungan</h2>
               <p>Butuh bantuan? Hubungi tim kami melalui kontak berikut.</p>

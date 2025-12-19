@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, CheckCircle } from 'lucide-react';
+import { Mail, CheckCircle, ChevronLeft } from 'lucide-react';
 import './ForgotPassword.css';
 
 const ForgotPassword = () => {
@@ -26,10 +26,12 @@ const ForgotPassword = () => {
 
   if (isSubmitted) {
     return (
-      <div className="forgot-password-container">
+      <div className="forgot-password-container min-h-screen page-bg pt-32 pb-20 px-4">
         <div className="fp-card">
-          <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 8 }}>
-            <button className="fp-back" onClick={() => navigate(-1)}>Kembali</button>
+          <div>
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-slate-400 hover:text-blue-600 transition mb-4 text-sm font-medium">
+              <ChevronLeft size={16}/> Kembali
+            </button>
           </div>
 
           <div className="fp-success-icon">
@@ -47,10 +49,12 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="forgot-password-container">
+    <div className="forgot-password-container min-h-screen page-bg pt-32 pb-20 px-4">
       <div className="fp-card">
-        <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 8 }}>
-          <button className="fp-back" onClick={() => navigate(-1)}>Kembali</button>
+        <div>
+          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-slate-400 hover:text-blue-600 transition mb-4 text-sm font-medium">
+            <ChevronLeft size={16}/> Kembali
+          </button>
         </div>
 
         <h2 className="fp-title">Lupa Password?</h2>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Components
 import Navbar from './components/Navbar';
@@ -53,12 +53,15 @@ function App() {
 
         {/* === Organizer Routes === */}
         <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
+        <Route path="/organizer/events" element={<DashboardAdmin initialTab="events" />} />
+        <Route path="/organizer/bookings" element={<DashboardAdmin initialTab="bookings" />} />
 
         {/* === Admin Routes === */}
         <Route path="/admin/dashboard" element={<DashboardAdmin />} />
 
         {/* === 404 === */}
-        <Route path="*" element={<NotFound />} />
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
     </BrowserRouter>
   );
