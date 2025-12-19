@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 // Tambahkan import icon baru: Ticket, CheckCircle2, ChevronRight, Sparkles
-import { MapPin, Calendar, Clock, Share2, Heart, ShieldCheck, User, Ticket, CheckCircle2, ChevronRight, Sparkles } from 'lucide-react';
+import { MapPin, Calendar, Clock, Share2, Heart, ShieldCheck, User, Ticket, CheckCircle2, ChevronRight, Sparkles, Minus, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { createBooking } from '../services/bookingService';
 
@@ -13,6 +13,11 @@ const EventDetail = () => {
   const [showModal, setShowModal] = useState(false);
   const [loadingBook, setLoadingBook] = useState(false);
   const [bookError, setBookError] = useState(null);
+
+  // selected ticket quantity for quick booking
+  const [qty, setQty] = useState(1);
+  const handleIncrement = () => setQty((q) => Math.min(q + 1, event?.quota ?? 99));
+  const handleDecrement = () => setQty((q) => Math.max(1, q - 1));
 
   const navigate = useNavigate();
 
@@ -44,13 +49,14 @@ const EventDetail = () => {
     setBookError(null);
     setLoadingBook(true);
     try {
-      // create booking with qty=1 and QRIS by default
-      const res = await createBooking({ event_id: event.id, quantity: 1, payment_method: 'qris', whatsapp: '-' });
+      const pricePer = event.ticket_price ?? event.price ?? 0;
+      // create booking with selected quantity and QRIS by default
+      const res = await createBooking({ event_id: event.id, quantity: qty, payment_method: 'qris', whatsapp: '-' });
       // backend returns booking_id and payment_info
       const bookingId = res.booking_id || res.id || (res.data && res.data.booking_id);
       const paymentInfo = res.payment_info || res.paymentInfo || null;
-      const total = paymentInfo?.total_price ?? (event.ticket_price || event.price || 0);
-      navigate(`/payment/${bookingId}`, { state: { bookingId, bookingIdParam: bookingId, qty: 1, total, pricePer: (event.ticket_price || event.price || 0), eventTitle: event.title, date: event.date, time: event.time, location: event.location, paymentInfo } });
+      const total = paymentInfo?.total_price ?? (pricePer * qty);
+      navigate(`/payment/${bookingId}`, { state: { bookingId, bookingIdParam: bookingId, qty, total, pricePer, eventTitle: event.title, date: event.date, time: event.time, location: event.location, paymentInfo } });
     } catch (err) {
       setBookError(err?.message || 'Gagal membuat booking');
     } finally {
@@ -170,7 +176,7 @@ const EventDetail = () => {
                     <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-indigo-400/10 rounded-full blur-3xl -z-10"></div>
 
                     {/* Header Harga yang "Wah" */}
-                    <div className="mb-8">
+                    <div className="mb-6">
                         <span className="block text-slate-500 text-sm font-bold uppercase tracking-wider mb-2">Penawaran Terbaik</span>
                         <div className="flex items-end gap-1">
                              {/* Teks Gradient */}
@@ -178,6 +184,24 @@ const EventDetail = () => {
                                 Rp {(event.ticket_price || event.price || 0).toLocaleString('id-ID').replace(',00', '')}
                             </h2>
                             <span className="text-slate-400 font-bold pb-2 text-lg">/pax</span>
+                        </div>
+
+                        {/* Qty selector + estimated total */}
+                        <div className="mt-4 flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-slate-100">
+                                <button type="button" onClick={handleDecrement} className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                                    <Minus size={16} />
+                                </button>
+                                <div className="w-10 text-center font-bold text-slate-900">{qty}</div>
+                                <button type="button" onClick={handleIncrement} className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition shadow-sm">
+                                    <Plus size={16} />
+                                </button>
+                            </div>
+
+                            <div className="text-right">
+                                <div className="text-xs text-slate-500">Perkiraan Total</div>
+                                <div className="text-lg font-bold text-blue-700">Rp {((event.ticket_price || event.price || 0) * qty).toLocaleString('id-ID')}</div>
+                            </div>
                         </div>
                     </div>
 

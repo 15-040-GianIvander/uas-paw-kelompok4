@@ -69,7 +69,7 @@ const Navbar = () => {
             
             {isLoggedIn ? (
               <div className="flex items-center space-x-2 pl-4 border-l border-gray-200">
-                <Link to="/my-bookings" className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 transition" title="My Booking">
+                <Link to="/booking-history" className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 transition" title="My Booking">
                   <Ticket size={18} />
                 </Link>
                 <Link to="/profile" className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 transition" title="Profile">
@@ -111,7 +111,7 @@ const Navbar = () => {
 
             {isLoggedIn ? (
               <>
-                <Link to="/my-bookings" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 font-medium">
+                <Link to="/booking-history" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 font-medium">
                     <Ticket size={18} className="text-blue-500"/> My Booking
                 </Link>
                 <Link to="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 font-medium">
