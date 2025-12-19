@@ -11,7 +11,7 @@ const NotFound = () => {
       </p>
       
       {/* Tombol kembali ke Home */}
-      <Link to="/" className="btn btn-primary" style={{ marginTop: '20px' }}>
+      <Link to="/" className="btn btn-danger" style={{ marginTop: '20px' }}>
         Kembali ke Beranda
       </Link>
     </div>
@@ -20,29 +20,32 @@ const NotFound = () => {
 
 const styles = {
   container: {
-    minHeight: '80vh',
+    minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',
     padding: '20px',
+    background: 'linear-gradient(180deg, #c0392b 0%, #ff6b6b 45%, #ffffff 100%)',
+    backgroundRepeat: 'no-repeat',
   },
   errorCode: {
     fontSize: '6rem',
-    fontWeight: 'bold',
-    color: 'var(--primary)', // Biru
+    fontWeight: '700',
+    color: '#ffffff', // putih di atas latar merah
     marginBottom: '0',
     lineHeight: '1',
+    textShadow: '0 6px 20px rgba(0,0,0,0.12)',
   },
   title: {
     fontSize: '2rem',
     marginBottom: '10px',
-    color: 'var(--text-main)',
+    color: 'rgba(255,255,255,0.95)',
   },
   text: {
-    color: 'var(--text-muted)',
-    maxWidth: '400px',
+    color: 'rgba(255,255,255,0.92)',
+    maxWidth: '540px',
     marginBottom: '20px',
   }
 };
