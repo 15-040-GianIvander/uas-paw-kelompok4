@@ -2,7 +2,7 @@
 
 **Kelompok 4 - Studi Kasus 8**
 
-Repository ini berisi source code untuk **Event Ticketing System**, sebuah platform manajemen acara dan pemesanan tiket online. Proyek ini dikembangkan sebagai Ujian Akhir Semester (UAS) mata kuliah Pengembangan Aplikasi Web (IF25-22014) di Institut Teknologi Sumatera.
+Repository ini berisi source code untuk **Event Ticketing System**, sebuah platform manajemen acara dan pemesanan tiket online yang bernama **EVORIA**. Proyek ini dikembangkan sebagai Ujian Akhir Semester (UAS) mata kuliah Pengembangan Aplikasi Web (IF25-22014) di Institut Teknologi Sumatera.
 Aplikasi ini memungkinkan pengguna untuk melakukan autentikasi, melihat daftar event, memesan tiket, serta memungkinkan admin atau event organizer untuk mengelola event yang tersedia.
 
 ---
@@ -102,13 +102,22 @@ Aplikasi Event Ticketing System telah dideploy sehingga dapat diakses secara onl
 ### 🔧 Backend Deployment
 
 Backend telah dideploy dan berfungsi sebagai penyedia REST API yang digunakan oleh frontend, berikut link backend deployment yang bisa diakses.
-[Link backend]
+
+[📌Link backend](https://www.evoria4.my.id/)
 
 ### 🌐 Frontend Deployment
 
 Frontend aplikasi dideploy menggunakan Vercel, berikut link frontend deployment yang bisa diakses.
 
 [📌Frontend](https://uas-paw-kelompok4.vercel.app/)
+
+---
+
+## 📸 Video Presentasi
+
+Video presentasi dari demo web ini yang menampilkan dan menjelaskan fitur serta alur nya, berikut link YouTube presemtasi nya.
+
+[📌YouTube](https://youtu.be/0-DIL9QVcVM)
 
 ---
 
